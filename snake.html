@@ -99,6 +99,21 @@
       transition: border-color .18s ease, background .18s ease, transform .18s ease;
     }
 
+    .language-select {
+      min-width: 104px;
+      min-height: 40px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: rgba(16, 24, 39, .9);
+      color: var(--text);
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .language-select:hover { border-color: rgba(166, 255, 95, .4); }
+    .language-select:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+
     .icon-button:hover, .action-button:hover {
       border-color: rgba(166, 255, 95, .4);
       background: var(--panel-light);
@@ -139,7 +154,7 @@
 
     .board-shell {
       position: relative;
-      width: min(100%, calc(100vh - 270px));
+      width: min(100%, calc(100vh - 310px));
       margin-inline: auto;
       padding: 10px;
       overflow: hidden;
@@ -212,6 +227,7 @@
 
     .bottom-row {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
@@ -221,6 +237,22 @@
     }
 
     .keys { display: flex; align-items: center; gap: 5px; }
+
+    .food-legend {
+      display: flex;
+      flex-basis: 100%;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      color: #bdc9d9;
+    }
+
+    .food-legend-title { color: var(--muted); }
+    .food-kind { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .food-icon { font-size: 13px; line-height: 1; }
+    .food-icon.berry { color: #ff7188; text-shadow: 0 0 8px rgba(255, 113, 136, .7); }
+    .food-icon.star { color: #ffd166; text-shadow: 0 0 8px rgba(255, 209, 102, .65); }
+    .food-icon.crystal { color: #6de8ff; text-shadow: 0 0 8px rgba(109, 232, 255, .65); }
 
     kbd {
       display: inline-grid;
@@ -267,18 +299,26 @@
       h1 { font-size: 16px; }
       .subtitle { font-size: 10px; }
       .icon-button { min-height: 38px; padding: 0 10px; }
-      .music-button span { display: none; }
+      .icon-button span { display: none; }
+      .language-select { min-width: 82px; min-height: 38px; padding: 0 6px; font-size: 12px; }
+      .top-actions { gap: 4px; }
       .score-row { gap: 7px; }
       .stat { min-height: 62px; padding: 10px 11px; }
       .stat-value { font-size: 19px; }
       .stat-label { font-size: 10px; }
       .board-shell {
-        width: min(100%, calc(100vh - 320px));
+        width: min(100%, calc(100vh - 360px));
         padding: 7px;
         border-radius: 14px;
       }
       .bottom-row { align-items: flex-start; flex-direction: column; gap: 8px; }
+      .food-legend { justify-content: flex-start; gap: 12px; font-size: 11px; }
       .dpad { display: grid; }
+    }
+
+    @media (max-width: 370px) {
+      .topbar { flex-wrap: wrap; }
+      .top-actions { width: 100%; justify-content: flex-end; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -292,46 +332,57 @@
       <div class="brand">
         <div class="brand-mark" aria-hidden="true">↗</div>
         <div>
-          <h1>贪吃蛇</h1>
-          <p class="subtitle">NEON SNAKE · CLASSIC ARCADE</p>
+          <h1 data-i18n="appName">贪吃蛇</h1>
+          <p class="subtitle" data-i18n="subtitle">NEON SNAKE · CLASSIC ARCADE</p>
         </div>
       </div>
       <div class="top-actions">
-        <button class="icon-button" id="pauseButton" type="button" aria-label="暂停游戏" title="暂停 / 继续 (Esc 或空格)">Ⅱ <span>暂停</span></button>
-        <button class="icon-button music-button" id="musicButton" type="button" aria-label="关闭背景音乐" aria-pressed="true" title="开关背景音乐">♫ <span>音乐开</span></button>
-        <button class="icon-button" id="restartButton" type="button" aria-label="重新开始" title="重新开始">↻ <span>重开</span></button>
+        <select class="language-select" id="languageSelect" aria-label="选择语言" title="选择界面语言">
+          <option value="zh">中文</option>
+          <option value="en">English</option>
+          <option value="ko">한국어</option>
+        </select>
+        <button class="icon-button" id="pauseButton" type="button" aria-label="暂停游戏" title="暂停 / 继续 (Esc 或空格)">Ⅱ <span data-i18n="pause">暂停</span></button>
+        <button class="icon-button music-button" id="musicButton" type="button" aria-label="关闭背景音乐" aria-pressed="true" title="开关背景音乐">♫ <span data-i18n="musicOn">音乐开</span></button>
+        <button class="icon-button" id="restartButton" type="button" aria-label="重新开始" title="重新开始">↻ <span data-i18n="restartShort">重开</span></button>
       </div>
     </header>
 
-    <section class="score-row" aria-label="游戏数据">
-      <div class="stat current"><span class="stat-label">当前得分</span><span class="stat-value" id="score">000</span></div>
-      <div class="stat"><span class="stat-label">最高纪录</span><span class="stat-value" id="best">000</span></div>
-      <div class="stat level"><span class="stat-label">当前速度</span><span class="stat-value" id="speed">1 级</span></div>
+    <section class="score-row" aria-label="游戏数据" data-i18n-aria-label="statsLabel">
+      <div class="stat current"><span class="stat-label" data-i18n="scoreLabel">当前得分</span><span class="stat-value" id="score">000</span></div>
+      <div class="stat"><span class="stat-label" data-i18n="bestLabel">最高纪录</span><span class="stat-value" id="best">000</span></div>
+      <div class="stat level"><span class="stat-label" data-i18n="speedLabel">当前速度</span><span class="stat-value" id="speed">1 级</span></div>
     </section>
 
-    <section class="board-shell" aria-label="贪吃蛇游戏区域">
+    <section class="board-shell" aria-label="贪吃蛇游戏区域" data-i18n-aria-label="gameArea">
       <div class="board-wrap" id="boardWrap">
-        <canvas id="gameCanvas" width="600" height="600" role="img" aria-label="贪吃蛇游戏棋盘"></canvas>
+        <canvas id="gameCanvas" width="600" height="600" role="img" aria-label="贪吃蛇游戏棋盘" data-i18n-aria-label="gameBoard"></canvas>
         <div class="overlay" id="overlay">
           <div class="overlay-card">
             <div class="overlay-icon" id="overlayIcon" aria-hidden="true">▶</div>
-            <h2 id="overlayTitle">准备好了吗？</h2>
-            <p id="overlayText">吃掉发光果实，让蛇蛇变长。<br>别撞到墙，也别咬到自己哦！</p>
-            <button class="primary-button" id="startButton" type="button">开始游戏</button>
+            <h2 id="overlayTitle" data-i18n="readyTitle">准备好了吗？</h2>
+            <p id="overlayText" data-i18n-html="readyText">吃掉发光果实，让蛇蛇变长。<br>别撞到墙，也别咬到自己哦！</p>
+            <button class="primary-button" id="startButton" type="button" data-i18n="start">开始游戏</button>
           </div>
         </div>
       </div>
     </section>
 
     <div class="bottom-row">
-      <div class="keys"><span>移动</span> <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd><span>或</span> <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></div>
-      <span>Esc / 空格键暂停 · 手机可滑动或使用方向键</span>
+      <div class="keys"><span data-i18n="moveLabel">移动</span> <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd><span data-i18n="orLabel">或</span> <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></div>
+      <span data-i18n="helpText">Esc / 空格键暂停 · 手机可滑动或使用方向键</span>
+      <div class="food-legend" aria-label="食物与分值" data-i18n-aria-label="foodLegend">
+        <span class="food-legend-title" data-i18n="foodLegend">食物分值</span>
+        <span class="food-kind"><span class="food-icon berry" aria-hidden="true">●</span><span data-i18n="berryPoints">浆果 +1</span></span>
+        <span class="food-kind"><span class="food-icon star" aria-hidden="true">★</span><span data-i18n="goldPoints">金果 +3</span></span>
+        <span class="food-kind"><span class="food-icon crystal" aria-hidden="true">◆</span><span data-i18n="crystalPoints">水晶 +5</span></span>
+      </div>
     </div>
-    <div class="dpad" aria-label="触屏方向控制">
-      <button type="button" data-dir="up" aria-label="向上">▲</button>
-      <button type="button" data-dir="left" aria-label="向左">◀</button>
-      <button type="button" data-dir="down" aria-label="向下">▼</button>
-      <button type="button" data-dir="right" aria-label="向右">▶</button>
+    <div class="dpad" aria-label="触屏方向控制" data-i18n-aria-label="touchControls">
+      <button type="button" data-dir="up" aria-label="向上" data-i18n-aria-label="up">▲</button>
+      <button type="button" data-dir="left" aria-label="向左" data-i18n-aria-label="left">◀</button>
+      <button type="button" data-dir="down" aria-label="向下" data-i18n-aria-label="down">▼</button>
+      <button type="button" data-dir="right" aria-label="向右" data-i18n-aria-label="right">▶</button>
     </div>
   </main>
 
@@ -346,9 +397,164 @@
       const startButton = document.getElementById("startButton");
       const pauseButton = document.getElementById("pauseButton");
       const musicButton = document.getElementById("musicButton");
+      const languageSelect = document.getElementById("languageSelect");
       const scoreElement = document.getElementById("score");
       const bestElement = document.getElementById("best");
       const speedElement = document.getElementById("speed");
+
+      const translations = {
+        zh: {
+          pageTitle: "贪吃蛇 · Neon Snake",
+          appName: "贪吃蛇",
+          subtitle: "霓虹经典街机 · NEON ARCADE",
+          languageLabel: "选择语言",
+          languageTitle: "选择界面语言",
+          pause: "暂停",
+          resume: "继续",
+          pauseGame: "暂停游戏",
+          resumeGame: "继续游戏",
+          pauseTitle: "暂停 / 继续 (Esc 或空格)",
+          musicOn: "音乐开",
+          musicOff: "音乐关",
+          enableMusic: "开启背景音乐",
+          disableMusic: "关闭背景音乐",
+          musicTitle: "开关背景音乐",
+          restartShort: "重开",
+          restart: "重新开始",
+          statsLabel: "游戏数据",
+          scoreLabel: "当前得分",
+          bestLabel: "最高纪录",
+          speedLabel: "当前速度",
+          level: "{level} 级",
+          foodLegend: "食物分值",
+          berryPoints: "浆果 +1",
+          goldPoints: "金果 +3",
+          crystalPoints: "水晶 +5",
+          gameArea: "贪吃蛇游戏区域",
+          gameBoard: "贪吃蛇游戏棋盘",
+          readyTitle: "准备好了吗？",
+          readyText: "吃掉发光果实，让蛇蛇变长。<br>别撞到墙，也别咬到自己哦！",
+          start: "开始游戏",
+          moveLabel: "移动",
+          orLabel: "或",
+          helpText: "Esc / 空格键暂停 · 手机可滑动或使用方向键",
+          touchControls: "触屏方向控制",
+          up: "向上",
+          down: "向下",
+          left: "向左",
+          right: "向右",
+          pausedTitle: "游戏已暂停",
+          pausedText: "休息一下，准备好后继续。",
+          victoryTitle: "完美通关！",
+          victoryText: "你填满了整个棋盘，得分 <strong>{score}</strong>！",
+          playAgain: "再玩一次",
+          gameOverTitle: "游戏结束",
+          gameOverText: "本次得分 <strong>{score}</strong>，再来挑战一次吧！"
+        },
+        en: {
+          pageTitle: "Snake · Neon Arcade",
+          appName: "Snake",
+          subtitle: "NEON SNAKE · CLASSIC ARCADE",
+          languageLabel: "Choose language",
+          languageTitle: "Choose interface language",
+          pause: "Pause",
+          resume: "Resume",
+          pauseGame: "Pause game",
+          resumeGame: "Resume game",
+          pauseTitle: "Pause / resume (Esc or Space)",
+          musicOn: "Music on",
+          musicOff: "Music off",
+          enableMusic: "Turn background music on",
+          disableMusic: "Turn background music off",
+          musicTitle: "Toggle background music",
+          restartShort: "Restart",
+          restart: "Restart",
+          statsLabel: "Game statistics",
+          scoreLabel: "SCORE",
+          bestLabel: "BEST",
+          speedLabel: "SPEED",
+          level: "Level {level}",
+          foodLegend: "FOOD POINTS",
+          berryPoints: "Berry +1",
+          goldPoints: "Golden fruit +3",
+          crystalPoints: "Crystal +5",
+          gameArea: "Snake game area",
+          gameBoard: "Snake game board",
+          readyTitle: "Ready to play?",
+          readyText: "Eat the glowing fruit to grow longer.<br>Don't hit the walls or bite yourself!",
+          start: "Start game",
+          moveLabel: "Move",
+          orLabel: "or",
+          helpText: "Esc / Space to pause · Swipe or use the arrows on mobile",
+          touchControls: "Touch direction controls",
+          up: "Up",
+          down: "Down",
+          left: "Left",
+          right: "Right",
+          pausedTitle: "Game paused",
+          pausedText: "Take a break. Continue when you're ready.",
+          victoryTitle: "Perfect run!",
+          victoryText: "You filled the whole board and scored <strong>{score}</strong>!",
+          playAgain: "Play again",
+          gameOverTitle: "Game over",
+          gameOverText: "You scored <strong>{score}</strong>. Try again!"
+        },
+        ko: {
+          pageTitle: "스네이크 · 네온 아케이드",
+          appName: "스네이크",
+          subtitle: "네온 스네이크 · 클래식 아케이드",
+          languageLabel: "언어 선택",
+          languageTitle: "화면 언어 선택",
+          pause: "일시정지",
+          resume: "계속하기",
+          pauseGame: "게임 일시정지",
+          resumeGame: "게임 계속하기",
+          pauseTitle: "일시정지 / 계속 (Esc 또는 Space)",
+          musicOn: "음악 켜짐",
+          musicOff: "음악 꺼짐",
+          enableMusic: "배경 음악 켜기",
+          disableMusic: "배경 음악 끄기",
+          musicTitle: "배경 음악 켜기/끄기",
+          restartShort: "다시 시작",
+          restart: "게임 다시 시작",
+          statsLabel: "게임 정보",
+          scoreLabel: "현재 점수",
+          bestLabel: "최고 기록",
+          speedLabel: "현재 속도",
+          level: "레벨 {level}",
+          foodLegend: "먹이 점수",
+          berryPoints: "베리 +1",
+          goldPoints: "황금 과일 +3",
+          crystalPoints: "수정 +5",
+          gameArea: "스네이크 게임 영역",
+          gameBoard: "스네이크 게임 보드",
+          readyTitle: "준비됐나요?",
+          readyText: "빛나는 과일을 먹고 더 길게 자라세요.<br>벽에 부딪히거나 몸을 물지 마세요!",
+          start: "게임 시작",
+          moveLabel: "이동",
+          orLabel: "또는",
+          helpText: "Esc / Space 일시정지 · 모바일에서는 스와이프 또는 방향 버튼",
+          touchControls: "터치 방향 조작",
+          up: "위",
+          down: "아래",
+          left: "왼쪽",
+          right: "오른쪽",
+          pausedTitle: "게임 일시정지",
+          pausedText: "잠시 쉬고 준비되면 계속하세요.",
+          victoryTitle: "완벽한 클리어!",
+          victoryText: "보드를 전부 채웠어요! 점수: <strong>{score}</strong>",
+          playAgain: "다시 하기",
+          gameOverTitle: "게임 오버",
+          gameOverText: "이번 점수는 <strong>{score}</strong>점이에요. 다시 도전해 보세요!"
+        }
+      };
+      const foodTypes = [
+        { key: "berry", points: 1, weight: 65, color: "#ff7188" },
+        { key: "gold", points: 3, weight: 25, color: "#ffd166" },
+        { key: "crystal", points: 5, weight: 10, color: "#6de8ff" }
+      ];
+      const snakePalette = ["#c6ff7a", "#4effb8", "#38d9ff", "#9a78ff"]
+        .map((color) => color.match(/[a-f\d]{2}/gi).map((channel) => parseInt(channel, 16)));
 
       const cells = 24;
       const cellSize = canvas.width / cells;
@@ -376,6 +582,8 @@
       let nextDirection;
       let score = 0;
       let best = loadBest();
+      let language = loadLanguage();
+      let overlayMessage = null;
       let state = "ready";
       let lastTime = 0;
       let accumulator = 0;
@@ -390,7 +598,50 @@
       bestElement.textContent = formatScore(best);
       drawBackground();
       resetBoard();
+      applyLanguage();
       draw();
+
+      function loadLanguage() {
+        try {
+          const savedLanguage = localStorage.getItem("neon-snake-language");
+          return Object.hasOwn(translations, savedLanguage) ? savedLanguage : "zh";
+        } catch (error) {
+          console.warn("无法读取已保存的界面语言。", error);
+          return "zh";
+        }
+      }
+
+      function translate(key, values = {}) {
+        return translations[language][key].replace(/\{(\w+)\}/g, (match, name) =>
+          Object.hasOwn(values, name) ? String(values[name]) : match
+        );
+      }
+
+      function applyLanguage() {
+        document.documentElement.lang = language === "zh" ? "zh-CN" : language === "ko" ? "ko-KR" : "en";
+        document.title = translate("pageTitle");
+        languageSelect.value = language;
+        languageSelect.setAttribute("aria-label", translate("languageLabel"));
+        languageSelect.title = translate("languageTitle");
+        document.querySelectorAll("[data-i18n]").forEach((element) => {
+          element.textContent = translate(element.dataset.i18n);
+        });
+        document.querySelectorAll("[data-i18n-html]").forEach((element) => {
+          element.innerHTML = translate(element.dataset.i18nHtml);
+        });
+        document.querySelectorAll("[data-i18n-aria-label]").forEach((element) => {
+          element.setAttribute("aria-label", translate(element.dataset.i18nAriaLabel));
+        });
+        pauseButton.title = translate("pauseTitle");
+        musicButton.title = translate("musicTitle");
+        document.getElementById("restartButton").title = translate("restart");
+        updatePauseButton();
+        updateMusicButton();
+        updateStats();
+        if (overlayMessage && !overlay.classList.contains("hidden")) {
+          renderOverlay();
+        }
+      }
 
       function loadBest() {
         try {
@@ -432,21 +683,33 @@
             }
           }
         }
-        food = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+        const position = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+        const selection = Math.random() * 100;
+        let weightLimit = 0;
+        const type = foodTypes.find((foodType) => {
+          weightLimit += foodType.weight;
+          return selection < weightLimit;
+        });
+        food = { ...position, ...type };
       }
 
       function updateStats() {
         scoreElement.textContent = formatScore(score);
         bestElement.textContent = formatScore(best);
-        speedElement.textContent = `${Math.min(10, 1 + Math.floor(score / 5))} 级`;
+        speedElement.textContent = translate("level", { level: Math.min(10, 1 + Math.floor(score / 5)) });
       }
 
-      function showOverlay(icon, title, text, buttonText) {
-        overlayIcon.textContent = icon;
-        overlayTitle.textContent = title;
-        overlayText.innerHTML = text;
-        startButton.textContent = buttonText;
+      function showOverlay(icon, titleKey, textKey, buttonKey, values = {}) {
+        overlayMessage = { icon, titleKey, textKey, buttonKey, values };
+        renderOverlay();
         overlay.classList.remove("hidden");
+      }
+
+      function renderOverlay() {
+        overlayIcon.textContent = overlayMessage.icon;
+        overlayTitle.textContent = translate(overlayMessage.titleKey);
+        overlayText.innerHTML = translate(overlayMessage.textKey, overlayMessage.values);
+        startButton.textContent = translate(overlayMessage.buttonKey);
       }
 
       function hideOverlay() {
@@ -473,7 +736,7 @@
         if (state === "running") {
           state = "paused";
           stopMusic();
-          showOverlay("Ⅱ", "游戏已暂停", "休息一下，准备好后继续。", "继续游戏");
+          showOverlay("Ⅱ", "pausedTitle", "pausedText", "resume");
         } else {
           startGame();
         }
@@ -482,13 +745,17 @@
 
       function updatePauseButton() {
         const paused = state === "paused";
-        pauseButton.innerHTML = paused ? "▶ <span>继续</span>" : "Ⅱ <span>暂停</span>";
-        pauseButton.setAttribute("aria-label", paused ? "继续游戏" : "暂停游戏");
+        pauseButton.innerHTML = paused
+          ? `▶ <span>${translate("resume")}</span>`
+          : `Ⅱ <span>${translate("pause")}</span>`;
+        pauseButton.setAttribute("aria-label", translate(paused ? "resumeGame" : "pauseGame"));
       }
 
       function updateMusicButton() {
-        musicButton.innerHTML = musicEnabled ? "♫ <span>音乐开</span>" : "♫ <span>音乐关</span>";
-        musicButton.setAttribute("aria-label", musicEnabled ? "关闭背景音乐" : "开启背景音乐");
+        musicButton.innerHTML = musicEnabled
+          ? `♫ <span>${translate("musicOn")}</span>`
+          : `♫ <span>${translate("musicOff")}</span>`;
+        musicButton.setAttribute("aria-label", translate(musicEnabled ? "disableMusic" : "enableMusic"));
         musicButton.setAttribute("aria-pressed", String(musicEnabled));
       }
 
@@ -601,7 +868,7 @@
 
         snake.unshift(head);
         if (eating) {
-          score += 1;
+          score += food.points;
           if (score > best) {
             best = score;
             saveBest();
@@ -610,7 +877,7 @@
             updateStats();
             state = "over";
             stopMusic();
-            showOverlay("✦", "完美通关！", `你填满了整个棋盘，得分 <strong>${score}</strong>！`, "再玩一次");
+            showOverlay("✦", "victoryTitle", "victoryText", "playAgain", { score });
             updatePauseButton();
             return;
           }
@@ -624,7 +891,7 @@
       function endGame() {
         state = "over";
         stopMusic();
-        showOverlay("↻", "游戏结束", `本次得分 <strong>${score}</strong>，再来挑战一次吧！`, "重新开始");
+        showOverlay("↻", "gameOverTitle", "gameOverText", "restart", { score });
         updatePauseButton();
       }
 
@@ -667,17 +934,48 @@
           const centerX = food.x * cellSize + cellSize / 2;
           const centerY = food.y * cellSize + cellSize / 2;
           ctx.save();
-          ctx.shadowColor = "#ff7188";
+          ctx.shadowColor = food.color;
           ctx.shadowBlur = 18;
-          ctx.fillStyle = "#ff7188";
-          ctx.beginPath();
-          ctx.arc(centerX, centerY, cellSize * .31, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.shadowBlur = 0;
-          ctx.fillStyle = "#ffd2d8";
-          ctx.beginPath();
-          ctx.arc(centerX - 2, centerY - 2, cellSize * .1, 0, Math.PI * 2);
-          ctx.fill();
+          ctx.fillStyle = food.color;
+          if (food.key === "berry") {
+            ctx.beginPath();
+            ctx.arc(centerX, centerY + 1, cellSize * .31, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = "#a6ff5f";
+            ctx.beginPath();
+            ctx.ellipse(centerX + 3, centerY - cellSize * .28, cellSize * .12, cellSize * .22, .7, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "#ffd2d8";
+            ctx.beginPath();
+            ctx.arc(centerX - 2, centerY - 2, cellSize * .1, 0, Math.PI * 2);
+            ctx.fill();
+          } else if (food.key === "gold") {
+            drawStar(centerX, centerY, cellSize * .4, cellSize * .19);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = "#fff0b3";
+            ctx.beginPath();
+            ctx.arc(centerX - 2, centerY - 3, cellSize * .08, 0, Math.PI * 2);
+            ctx.fill();
+          } else {
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY - cellSize * .42);
+            ctx.lineTo(centerX + cellSize * .32, centerY - cellSize * .08);
+            ctx.lineTo(centerX + cellSize * .2, centerY + cellSize * .34);
+            ctx.lineTo(centerX - cellSize * .2, centerY + cellSize * .34);
+            ctx.lineTo(centerX - cellSize * .32, centerY - cellSize * .08);
+            ctx.closePath();
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = "rgba(255, 255, 255, .62)";
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY - cellSize * .3);
+            ctx.lineTo(centerX - cellSize * .08, centerY + cellSize * .2);
+            ctx.lineTo(centerX - cellSize * .2, centerY - cellSize * .06);
+            ctx.closePath();
+            ctx.fill();
+          }
           ctx.restore();
         }
 
@@ -689,17 +987,17 @@
           const x = xPosition * cellSize + inset;
           const y = yPosition * cellSize + inset;
           const size = cellSize - inset * 2;
+          const color = snakeColorAt(index / Math.max(1, snake.length - 1));
           ctx.save();
-          if (index === 0) {
-            ctx.shadowColor = "#a6ff5f";
-            ctx.shadowBlur = 15;
-            ctx.fillStyle = "#c2ff85";
-          } else {
-            const opacity = Math.max(.52, 1 - index / (snake.length * 1.6));
-            ctx.fillStyle = `rgba(91, 225, 170, ${opacity})`;
-          }
+          ctx.shadowColor = color;
+          ctx.shadowBlur = index === 0 ? 17 : 5;
+          ctx.fillStyle = color;
           roundedRect(ctx, x, y, size, size, index === 0 ? 7 : 6);
           ctx.fill();
+          ctx.shadowBlur = 0;
+          ctx.lineWidth = 1;
+          ctx.strokeStyle = "rgba(255,255,255,.28)";
+          ctx.stroke();
           ctx.restore();
 
           if (index === 0) drawEyes(segment);
@@ -709,6 +1007,29 @@
       function roundedRect(context, x, y, width, height, radius) {
         context.beginPath();
         context.roundRect(x, y, width, height, radius);
+      }
+
+      function drawStar(centerX, centerY, outerRadius, innerRadius) {
+        ctx.beginPath();
+        for (let point = 0; point < 10; point += 1) {
+          const radius = point % 2 === 0 ? outerRadius : innerRadius;
+          const angle = -Math.PI / 2 + point * Math.PI / 5;
+          const x = centerX + Math.cos(angle) * radius;
+          const y = centerY + Math.sin(angle) * radius;
+          if (point === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+      }
+
+      function snakeColorAt(position) {
+        const scaledPosition = position * (snakePalette.length - 1);
+        const paletteIndex = Math.min(Math.floor(scaledPosition), snakePalette.length - 2);
+        const amount = scaledPosition - paletteIndex;
+        const channels = snakePalette[paletteIndex].map((channel, index) =>
+          Math.round(channel + (snakePalette[paletteIndex + 1][index] - channel) * amount)
+        );
+        return `rgb(${channels.join(",")})`;
       }
 
       function drawEyes(head) {
@@ -728,6 +1049,15 @@
 
       startButton.addEventListener("click", startGame);
       pauseButton.addEventListener("click", togglePause);
+      languageSelect.addEventListener("change", () => {
+        language = languageSelect.value;
+        try {
+          localStorage.setItem("neon-snake-language", language);
+        } catch (error) {
+          console.warn("无法保存界面语言设置。", error);
+        }
+        applyLanguage();
+      });
       musicButton.addEventListener("click", () => {
         musicEnabled = !musicEnabled;
         updateMusicButton();
