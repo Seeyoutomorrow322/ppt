@@ -2370,6 +2370,16 @@
           const deltaX = touchX - headX;
           const deltaY = touchY - headY;
           if (Math.max(Math.abs(deltaX), Math.abs(deltaY)) < 5) return null;
+
+          const plannedDirection = directionQueue[directionQueue.length - 1] || direction;
+          const targetAngle = Math.atan2(deltaY, deltaX);
+          const headingAngle = Math.atan2(plannedDirection.y, plannedDirection.x);
+          const angleDifference = Math.atan2(
+            Math.sin(targetAngle - headingAngle),
+            Math.cos(targetAngle - headingAngle)
+          );
+          if (Math.abs(angleDifference) < 55 * Math.PI / 180) return null;
+
           return Math.abs(deltaX) > Math.abs(deltaY)
             ? (deltaX > 0 ? "right" : "left")
             : (deltaY > 0 ? "down" : "up");
