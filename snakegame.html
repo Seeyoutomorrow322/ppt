@@ -3,11 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#080d17">
+  <meta name="theme-color" content="#c5efed">
   <title>Snake · Neon Arcade</title>
   <style>
     :root {
       color-scheme: dark;
+      --viewport-height: 100vh;
       --bg: #080d17;
       --panel: #101827;
       --panel-light: #162235;
@@ -18,11 +19,15 @@
       --line: rgba(167, 194, 224, .12);
     }
 
+    @supports (height: 100dvh) {
+      :root { --viewport-height: 100dvh; }
+    }
+
     * { box-sizing: border-box; }
 
     body {
       min-width: 320px;
-      min-height: 100vh;
+      min-height: var(--viewport-height);
       margin: 0;
       display: grid;
       place-items: center;
@@ -184,7 +189,7 @@
 
     .board-shell {
       position: relative;
-      width: min(100%, calc(100vh - 310px));
+      width: min(100%, calc(var(--viewport-height) - 310px));
       margin-inline: auto;
       padding: 10px;
       overflow: hidden;
@@ -400,13 +405,61 @@
     .menu-art svg {
       width: 94%;
       overflow: visible;
-      filter: drop-shadow(0 0 17px rgba(83, 245, 206, .26));
-      animation: art-float 5s ease-in-out infinite;
+      filter: drop-shadow(0 0 20px rgba(83, 245, 206, .3));
+      animation: art-float 6.4s ease-in-out infinite;
     }
 
     @keyframes art-float {
-      0%, 100% { transform: translateY(0) rotate(-2deg); }
-      50% { transform: translateY(-9px) rotate(1deg); }
+      0%, 100% { transform: translate3d(0, 0, 0) rotate(-1deg) scale(1); }
+      28% { transform: translate3d(2px, -5px, 0) rotate(.5deg) scale(1.018); }
+      56% { transform: translate3d(-1px, -8px, 0) rotate(1deg) scale(1.028); }
+      82% { transform: translate3d(-2px, -3px, 0) rotate(-.4deg) scale(1.012); }
+    }
+
+    .snake-buddy {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: buddy-wiggle 5.2s ease-in-out infinite;
+    }
+
+    @keyframes buddy-wiggle {
+      0%, 100% { transform: translate(0, 0) rotate(-.5deg) scaleY(1); }
+      24% { transform: translate(1px, -1px) rotate(.45deg) scaleY(1.012); }
+      52% { transform: translate(-1px, 1px) rotate(0) scaleY(.99); }
+      76% { transform: translate(1px, 0) rotate(-.35deg) scaleY(1.008); }
+    }
+
+    .snake-glimmer {
+      animation: glimmer-flow 5.2s linear infinite;
+    }
+
+    @keyframes glimmer-flow {
+      to { stroke-dashoffset: -26; }
+    }
+
+    .buddy-head {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: head-bobble 3.6s ease-in-out infinite;
+    }
+
+    @keyframes head-bobble {
+      0%, 100% { transform: rotate(0) translateY(0) scale(1); }
+      32% { transform: rotate(2deg) translateY(-1px) scale(1.012); }
+      68% { transform: rotate(-1.5deg) translateY(1px) scale(.998); }
+    }
+
+    .buddy-sparkle {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: sparkle-pop 1.6s ease-in-out infinite;
+    }
+
+    .buddy-sparkle:nth-of-type(2n) { animation-delay: -.8s; }
+
+    @keyframes sparkle-pop {
+      0%, 100% { opacity: .42; transform: scale(.72) rotate(0); }
+      50% { opacity: 1; transform: scale(1.16) rotate(18deg); }
     }
 
     .menu-food {
@@ -415,7 +468,7 @@
       height: 13px;
       border-radius: 50%;
       box-shadow: 0 0 23px currentColor;
-      animation: food-drift 4.2s ease-in-out infinite;
+      animation: food-drift 2.4s ease-in-out infinite;
     }
 
     .menu-food.berry { top: 15%; right: 17%; color: #ff7188; background: currentColor; }
@@ -423,8 +476,8 @@
     .menu-food.crystal { bottom: 17%; left: 17%; width: 9px; height: 9px; border-radius: 2px; color: #6de8ff; background: currentColor; transform: rotate(45deg); animation-delay: -2.8s; }
 
     @keyframes food-drift {
-      0%, 100% { translate: 0 0; }
-      50% { translate: 0 -12px; }
+      0%, 100% { translate: 0 0; scale: 1; }
+      50% { translate: 0 -15px; scale: 1.16; }
     }
 
     .primary-button {
@@ -490,6 +543,50 @@
     .level-choice:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
     .level-name { color: var(--green); font-size: 15px; font-weight: 800; }
     .level-description { color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .leaderboard {
+      display: grid;
+      gap: 7px;
+      margin: 14px 0 18px;
+      padding: 0;
+      list-style: none;
+      text-align: left;
+    }
+    .leaderboard-entry {
+      display: grid;
+      grid-template-columns: 30px minmax(0, 1fr) auto auto;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 12px;
+      border: 1px solid rgba(71, 148, 132, .18);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, .52);
+      color: #284d3f;
+      font-size: 13px;
+    }
+    .leaderboard-rank { color: #478e70; font-weight: 800; }
+    .leaderboard-player { overflow: hidden; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+    .leaderboard-level { color: #547466; font-size: 11px; }
+    .leaderboard-score { color: #228154; font-weight: 900; font-variant-numeric: tabular-nums; }
+    .leaderboard-empty { color: #547466; text-align: center; }
+    .player-name-form { display: grid; gap: 8px; margin: 16px 0; text-align: left; }
+    .player-name-form label { color: #365b4b; font-size: 13px; font-weight: 700; }
+    .player-name-row { display: flex; gap: 8px; }
+    .player-name-input {
+      min-width: 0;
+      flex: 1;
+      padding: 0 12px;
+      border: 1px solid rgba(71, 148, 132, .28);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, .8);
+      color: #284d3f;
+      font: inherit;
+    }
+    .player-name-form .secondary-button {
+      border-color: rgba(71, 148, 132, .25);
+      background: rgba(255, 255, 255, .6);
+      color: #365b4b;
+    }
+    .player-name-status { min-height: 1em; margin: 0 !important; color: #478e70 !important; font-size: 12px !important; }
 
     .bottom-row {
       display: flex;
@@ -573,7 +670,7 @@
       .stat-value { font-size: 19px; }
       .stat-label { font-size: 10px; }
       .board-shell {
-        width: min(100%, calc(100vh - 360px));
+        width: min(100%, calc(var(--viewport-height) - 360px));
         padding: 7px;
         border-radius: 14px;
       }
@@ -616,10 +713,259 @@
       .menu-copy { padding-block: 30px; }
     }
 
+    @media (max-height: 700px) {
+      body { padding-block: 8px; }
+      .topbar { margin-bottom: 8px; }
+      .score-row { margin-bottom: 8px; }
+      .stat { min-height: 54px; padding-block: 8px; }
+      .board-shell { width: min(100%, calc(var(--viewport-height) - 260px)); }
+    }
+
+    @media (max-width: 540px) and (max-height: 700px) {
+      .topbar { flex-wrap: nowrap; }
+      .top-actions { width: auto; }
+      .brand { gap: 8px; }
+      .brand-mark { width: 34px; height: 34px; }
+      .board-shell { width: min(100%, calc(var(--viewport-height) - 340px)); }
+      .bottom-row { align-items: center; flex-direction: row; justify-content: space-between; }
+      .food-legend { gap: 8px; font-size: 10px; }
+    }
+
+    @media (max-height: 500px) {
+      .board-shell { width: min(100%, calc(var(--viewport-height) - 205px)); }
+      .dpad { display: none; }
+      .bottom-row { align-items: center; flex-direction: row; justify-content: space-between; }
+      .food-legend { gap: 8px; font-size: 10px; }
+    }
+
+    @media (max-width: 540px) and (max-height: 500px) {
+      .board-shell { width: min(100%, calc(var(--viewport-height) - 205px)); }
+      .topbar { gap: 8px; }
+      .brand-mark { display: none; }
+      .icon-button { min-height: 34px; padding-inline: 8px; }
+      .score-row { gap: 4px; }
+      .stat { min-height: 48px; padding: 6px; }
+      .stat-value { font-size: 16px; }
+    }
+
     @media (max-width: 370px) {
       .topbar { flex-wrap: wrap; }
       .top-actions { width: 100%; justify-content: flex-end; }
     }
+
+    @media (max-width: 370px) and (max-height: 700px) {
+      .topbar { flex-wrap: nowrap; }
+      .top-actions { width: auto; }
+    }
+
+    body[data-active-screen="menu"],
+    body[data-active-screen="levels"],
+    body[data-active-screen="highScores"],
+    body[data-active-screen="game"] {
+      background:
+        radial-gradient(ellipse at 32% 40%, rgba(255, 255, 255, .48), transparent 60%),
+        radial-gradient(ellipse at 78% 68%, rgba(95, 199, 194, .13), transparent 58%),
+        #c5efed;
+      color: #284d3f;
+    }
+    body[data-active-screen="game"]::before {
+      background: none;
+      animation: none;
+    }
+    body[data-active-screen="game"]::after { opacity: 0; }
+    .game[data-active-screen="game"] .board-shell {
+      padding: 0;
+      overflow: visible;
+      border: 0;
+      border-radius: 0;
+      background: none;
+      box-shadow: none;
+    }
+    .game[data-active-screen="game"] .board-wrap {
+      overflow: visible;
+      border-radius: 0;
+      background: transparent;
+    }
+    .game[data-active-screen="game"] .stat {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+    .game[data-active-screen="game"] .stat-label { color: #547466; }
+    .game[data-active-screen="game"] .stat-value { color: #284d3f; }
+    .game[data-active-screen="game"] .stat.current .stat-value { color: #238452; }
+    .game[data-active-screen="game"] .stat.level .stat-value { color: #21808a; }
+    .game[data-active-screen="game"] .score-row { gap: 0; }
+    .game[data-active-screen="levels"] .board-shell,
+    .game[data-active-screen="highScores"] .board-shell {
+      overflow: visible;
+      border-color: rgba(71, 148, 132, .18);
+      background: rgba(245, 255, 252, .48);
+      box-shadow: 0 24px 70px rgba(57, 128, 112, .14);
+    }
+    .game[data-active-screen="levels"] .board-wrap,
+    .game[data-active-screen="highScores"] .board-wrap { background: transparent; }
+    .game[data-active-screen="levels"] #gameCanvas,
+    .game[data-active-screen="highScores"] #gameCanvas { visibility: hidden; }
+    .game[data-active-screen="levels"] .overlay,
+    .game[data-active-screen="highScores"] .overlay {
+      overflow-y: auto;
+      background: transparent;
+      backdrop-filter: none;
+      color: #284d3f;
+    }
+    .game[data-active-screen="levels"] .overlay-screen h2,
+    .game[data-active-screen="highScores"] .overlay-screen h2 { color: #284d3f; }
+    .game[data-active-screen="levels"] .overlay-screen p,
+    .game[data-active-screen="highScores"] .overlay-screen p { color: #547466; }
+    .game[data-active-screen="levels"] .overlay-icon,
+    .game[data-active-screen="highScores"] .overlay-icon {
+      border-color: rgba(71, 148, 132, .22);
+      background: rgba(103, 198, 166, .15);
+      color: #29855b;
+      box-shadow: 0 0 26px rgba(81, 170, 142, .1);
+    }
+    .game[data-active-screen="levels"] .level-choice {
+      padding: 12px;
+      border-color: rgba(71, 148, 132, .2);
+      background: rgba(255, 255, 255, .56);
+      color: #284d3f;
+    }
+    .game[data-active-screen="levels"] .level-choice:hover {
+      border-color: rgba(41, 133, 91, .5);
+      background: rgba(255, 255, 255, .88);
+    }
+    .game[data-active-screen="levels"] .level-name { color: #267a52; }
+    .game[data-active-screen="levels"] .level-description { color: #547466; }
+    .game[data-active-screen="levels"] .secondary-button,
+    .game[data-active-screen="highScores"] .secondary-button {
+      border-color: rgba(71, 148, 132, .25);
+      background: rgba(255, 255, 255, .6);
+      color: #365b4b;
+    }
+    .game[data-active-screen="levels"],
+    .game[data-active-screen="highScores"] { width: min(100%, 560px); }
+    .game[data-active-screen="levels"] .score-row,
+    .game[data-active-screen="levels"] .bottom-row,
+    .game[data-active-screen="levels"] .dpad,
+    .game[data-active-screen="highScores"] .score-row,
+    .game[data-active-screen="highScores"] .bottom-row,
+    .game[data-active-screen="highScores"] .dpad { display: none; }
+    .game[data-active-screen="levels"] .board-shell,
+    .game[data-active-screen="highScores"] .board-shell {
+      width: 100%;
+      padding: 0;
+      border: 0;
+      background: none;
+      box-shadow: none;
+    }
+    .game[data-active-screen="levels"] .board-wrap,
+    .game[data-active-screen="highScores"] .board-wrap {
+      min-height: min(78vh, 680px);
+      aspect-ratio: auto;
+      overflow: visible;
+    }
+    .game[data-active-screen="levels"] .overlay,
+    .game[data-active-screen="highScores"] .overlay { padding: 12px; }
+    .game[data-active-screen="levels"] .overlay-card,
+    .game[data-active-screen="highScores"] .overlay-card {
+      width: min(100%, 460px);
+      max-height: 100%;
+      overflow-y: auto;
+    }
+    .game[data-active-screen="levels"] .overlay-screen,
+    .game[data-active-screen="highScores"] .overlay-screen {
+      max-height: none;
+      overflow: visible;
+    }
+
+    .game[data-active-screen="menu"] { width: min(100%, 440px, calc(73.85vh - 37px)); }
+    @supports (height: 100dvh) {
+      .game[data-active-screen="menu"] { width: min(100%, 440px, calc(73.85dvh - 37px)); }
+    }
+    .game[data-active-screen="menu"] .topbar { display: none; }
+    .game[data-active-screen="menu"] .board-shell {
+      padding: 0;
+      overflow: visible;
+      border: 0;
+      border-radius: 0;
+      background: none;
+      box-shadow: none;
+    }
+    .game[data-active-screen="menu"] .board-wrap {
+      min-height: 0;
+      aspect-ratio: 960 / 1300;
+      overflow: visible;
+      border-radius: 0;
+      background: transparent;
+    }
+    .game[data-active-screen="menu"] .overlay {
+      display: grid;
+      padding: 0;
+      overflow: visible;
+      background: none;
+      backdrop-filter: none;
+    }
+    .game[data-active-screen="menu"] .overlay-card {
+      width: 100%;
+      height: 100%;
+      max-height: none;
+      overflow: visible;
+    }
+    .game[data-active-screen="menu"] .overlay-screen[data-screen="menu"] {
+      position: relative;
+      display: block;
+      width: 100%;
+      height: 100%;
+      max-height: none;
+      overflow: visible;
+      animation: none;
+    }
+    .game[data-active-screen="menu"] .menu-copy,
+    .game[data-active-screen="menu"] .menu-art { display: none; }
+    .menu-artwork {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .menu-character {
+      position: absolute;
+      z-index: 1;
+      top: 18.3%;
+      left: 16.67%;
+      width: 66.66%;
+      height: 32.25%;
+      object-fit: contain;
+      pointer-events: none;
+      animation: menu-snake-float 3.8s ease-in-out infinite;
+    }
+    @keyframes menu-snake-float {
+      0%, 100% { transform: translateY(0) rotate(-.6deg); }
+      50% { transform: translateY(-6px) rotate(.6deg); }
+    }
+    .menu-artwork-button {
+      position: absolute;
+      z-index: 2;
+      left: 27.8%;
+      width: 44.4%;
+      height: 9%;
+      padding: 0;
+      border: 0;
+      border-radius: 10%;
+      background: transparent;
+      cursor: pointer;
+    }
+    .menu-artwork-button:hover { background: rgba(255, 255, 255, .08); }
+    .menu-artwork-button:focus-visible {
+      outline: 3px solid #fff;
+      outline-offset: 3px;
+    }
+    .menu-artwork-button[data-action="new-game"] { top: 48.7%; }
+    .menu-artwork-button[data-action="high-scores"] { top: 58.2%; }
+    .menu-artwork-button[data-action="settings"] { top: 67.8%; }
+    .menu-artwork-button[data-action="more-games"] { top: 77.3%; }
 
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
@@ -657,6 +1003,12 @@
         <div class="overlay" id="overlay">
           <div class="overlay-card">
             <section class="overlay-screen" data-screen="menu">
+              <img class="menu-artwork" src="images/snake-menu.svg" alt="Colorful retro Snake game menu with New Game, High Scores, Settings, and More Games buttons">
+              <img class="menu-character" src="images/snake-character.png" alt="" aria-hidden="true">
+              <button class="menu-artwork-button" id="menuArtworkStartButton" type="button" data-action="new-game" aria-label="New Game" data-i18n-aria-label="newGameLabel"></button>
+              <button class="menu-artwork-button" id="menuHighScoresButton" type="button" data-action="high-scores" aria-label="High Scores" data-i18n-aria-label="highScoresTitle"></button>
+              <button class="menu-artwork-button" id="menuArtworkSettingsButton" type="button" data-action="settings" aria-label="Settings" data-i18n-aria-label="settings"></button>
+              <button class="menu-artwork-button" id="menuMoreGamesButton" type="button" data-action="more-games" aria-label="More Games" data-i18n-aria-label="moreGamesTitle"></button>
               <div class="menu-copy">
                 <div class="menu-eyebrow" data-i18n="menuEyebrow">A LITTLE ARCADE, A LOT OF GLOW</div>
                 <h2 data-i18n="menuTitle">Neon Snake</h2>
@@ -683,12 +1035,31 @@
                     </radialGradient>
                   </defs>
                   <circle cx="164" cy="144" r="133" fill="url(#menuOrbGradient)"/>
-                  <path d="M68 214C68 173 131 173 131 214S194 255 194 214 131 173 194 131 257 131 257 87" stroke="url(#menuSnakeGradient)" stroke-width="23" stroke-linecap="round"/>
-                  <path d="M68 214C68 173 131 173 131 214S194 255 194 214 131 173 194 131 257 131 257 87" stroke="#effff9" stroke-opacity=".45" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 18"/>
-                  <circle cx="257" cy="87" r="20" fill="url(#menuSnakeGradient)"/>
-                  <circle cx="264" cy="82" r="2.8" fill="#10252a"/>
-                  <circle cx="251" cy="82" r="2.8" fill="#10252a"/>
-                  <path d="M249 96C254 100 260 100 265 96" stroke="#10252a" stroke-width="2.5" stroke-linecap="round"/>
+                  <g class="snake-buddy">
+                    <path d="M55 218C55 177 111 165 130 201C151 243 195 246 202 211C209 179 168 160 177 132C186 104 218 107 231 128C246 152 268 139 267 111C266 94 253 83 259 66" stroke="rgba(10,43,49,.8)" stroke-width="39" stroke-linecap="round"/>
+                    <path d="M55 218C55 177 111 165 130 201C151 243 195 246 202 211C209 179 168 160 177 132C186 104 218 107 231 128C246 152 268 139 267 111C266 94 253 83 259 66" stroke="url(#menuSnakeGradient)" stroke-width="31" stroke-linecap="round"/>
+                    <path class="snake-glimmer" d="M61 213C62 184 103 174 121 199M143 216C157 237 186 233 192 211M187 145C190 124 211 117 226 133" stroke="#effff9" stroke-opacity=".55" stroke-width="4" stroke-linecap="round" stroke-dasharray="1 12"/>
+                    <circle cx="55" cy="218" r="10" fill="#b6ff69"/>
+                    <circle cx="78" cy="188" r="2.7" fill="#f1fff5" fill-opacity=".64"/>
+                    <circle cx="111" cy="191" r="2.7" fill="#f1fff5" fill-opacity=".64"/>
+                    <circle cx="150" cy="226" r="2.7" fill="#f1fff5" fill-opacity=".64"/>
+                    <circle cx="188" cy="199" r="2.7" fill="#f1fff5" fill-opacity=".64"/>
+                    <circle cx="202" cy="140" r="2.7" fill="#f1fff5" fill-opacity=".64"/>
+                    <g class="buddy-head">
+                      <circle cx="258" cy="78" r="27" fill="url(#menuSnakeGradient)" stroke="#d9fff3" stroke-opacity=".7" stroke-width="2"/>
+                      <ellipse cx="249" cy="83" rx="5.2" ry="6.4" fill="#f7fffd"/>
+                      <ellipse cx="266" cy="83" rx="5.2" ry="6.4" fill="#f7fffd"/>
+                      <circle cx="250" cy="84" r="2.7" fill="#16333b"/>
+                      <circle cx="267" cy="84" r="2.7" fill="#16333b"/>
+                      <circle cx="251" cy="81" r="1.15" fill="white"/>
+                      <circle cx="268" cy="81" r="1.15" fill="white"/>
+                      <ellipse cx="243" cy="92" rx="4.2" ry="2.5" fill="#ff90aa" fill-opacity=".78"/>
+                      <ellipse cx="273" cy="92" rx="4.2" ry="2.5" fill="#ff90aa" fill-opacity=".78"/>
+                      <path d="M252 94C256 100 263 100 267 94" stroke="#16404a" stroke-width="2.8" stroke-linecap="round"/>
+                    </g>
+                  </g>
+                  <path class="buddy-sparkle" d="M73 78L76 85L83 88L76 91L73 98L70 91L63 88L70 85L73 78Z" fill="#d5fff7"/>
+                  <path class="buddy-sparkle" d="M225 54L227 59L232 61L227 63L225 68L223 63L218 61L223 59L225 54Z" fill="#c4b4ff"/>
                   <circle cx="74" cy="75" r="3" fill="#c8fff1" fill-opacity=".8"/>
                   <circle cx="225" cy="222" r="2" fill="#d5c9ff" fill-opacity=".9"/>
                   <circle cx="118" cy="48" r="2" fill="#c8fff1" fill-opacity=".7"/>
@@ -697,23 +1068,35 @@
             </section>
             <section class="overlay-screen" data-screen="levels" hidden>
               <div class="overlay-icon" aria-hidden="true">✦</div>
-              <h2 data-i18n="levelSelectTitle">Select a level</h2>
-              <p data-i18n="levelSelectDescription">Choose your starting speed.</p>
+              <h2 data-i18n="levelSelectTitle">Choose difficulty</h2>
+              <p data-i18n="levelSelectDescription">Choose a difficulty to start playing.</p>
               <div class="level-options">
-                <button class="level-choice" type="button" data-level="1">
-                  <span class="level-name" data-i18n="easyLevel">Easy</span>
-                  <span class="level-description" data-i18n="easyDescription">Relaxed pace · Best for beginners</span>
-                </button>
-                <button class="level-choice" type="button" data-level="2">
-                  <span class="level-name" data-i18n="classicLevel">Classic</span>
-                  <span class="level-description" data-i18n="classicDescription">Classic pace · The original challenge</span>
-                </button>
-                <button class="level-choice" type="button" data-level="3">
-                  <span class="level-name" data-i18n="turboLevel">Turbo</span>
-                  <span class="level-description" data-i18n="turboDescription">Fast pace · For snake masters</span>
-                </button>
+                <button class="level-choice" type="button" data-difficulty="easy"><span class="level-name" data-i18n="easy">Easy</span><span class="level-description" data-i18n="easyDescription">A slower pace for a relaxed game.</span></button>
+                <button class="level-choice" type="button" data-difficulty="normal"><span class="level-name" data-i18n="normal">Normal</span><span class="level-description" data-i18n="normalDescription">Classic speed with a steady challenge.</span></button>
+                <button class="level-choice" type="button" data-difficulty="hard"><span class="level-name" data-i18n="hard">Hard</span><span class="level-description" data-i18n="hardDescription">A fast start for experienced players.</span></button>
               </div>
               <button class="secondary-button" id="levelsBackButton" type="button" data-i18n="backToMenu">Back to menu</button>
+            </section>
+            <section class="overlay-screen" data-screen="highScores" hidden>
+              <div class="overlay-icon" aria-hidden="true">★</div>
+              <h2 data-i18n="highScoresTitle">High Scores</h2>
+              <p><span data-i18n="bestLabel">BEST</span> <strong id="highScoreValue">000</strong></p>
+              <form class="player-name-form" id="playerNameForm">
+                <label for="playerNameInput" data-i18n="playerName">Player name</label>
+                <div class="player-name-row">
+                  <input class="player-name-input" id="playerNameInput" type="text" maxlength="16" autocomplete="nickname" required>
+                  <button class="secondary-button" type="submit" data-i18n="savePlayerName">Save name</button>
+                </div>
+                <p class="player-name-status" id="playerNameStatus" role="status"></p>
+              </form>
+              <ol class="leaderboard" id="leaderboardList" aria-label="Leaderboard" data-i18n-aria-label="highScoresTitle"></ol>
+              <button class="secondary-button" id="highScoresBackButton" type="button" data-i18n="backToMenu">Back to menu</button>
+            </section>
+            <section class="overlay-screen" data-screen="moreGames" hidden>
+              <div class="overlay-icon" aria-hidden="true">🎮</div>
+              <h2 data-i18n="moreGamesTitle">More Games</h2>
+              <p data-i18n="moreGamesMessage">More games are coming soon!</p>
+              <button class="secondary-button" id="moreGamesBackButton" type="button" data-i18n="backToMenu">Back to menu</button>
             </section>
             <section class="overlay-screen" data-screen="settings" hidden>
               <div class="overlay-icon" aria-hidden="true">⚙</div>
@@ -804,6 +1187,10 @@
       const volumeValue = document.getElementById("volumeValue");
       const scoreElement = document.getElementById("score");
       const bestElement = document.getElementById("best");
+      const highScoreElement = document.getElementById("highScoreValue");
+      const leaderboardList = document.getElementById("leaderboardList");
+      const playerNameInput = document.getElementById("playerNameInput");
+      const playerNameStatus = document.getElementById("playerNameStatus");
       const speedElement = document.getElementById("speed");
       const finalScoreElement = document.getElementById("finalScore");
       const victoryScoreElement = document.getElementById("victoryScore");
@@ -814,22 +1201,33 @@
           appName: "Snake",
           subtitle: "NEON SNAKE · CLASSIC ARCADE",
           settings: "Settings",
+          newGameLabel: "New Game",
+          highScoresTitle: "High Scores",
+          moreGamesTitle: "More Games",
+          moreGamesMessage: "More games are coming soon!",
           menuTitle: "Neon Snake",
           menuEyebrow: "A LITTLE ARCADE, A LOT OF GLOW",
           menuDescription: "Eat glowing fruit, grow longer, and beat your high score.",
-          levelSelectTitle: "Select a level",
-          levelSelectDescription: "Choose your starting speed.",
-          easyLevel: "Easy",
-          easyDescription: "Relaxed pace · Best for beginners",
-          classicLevel: "Classic",
-          classicDescription: "Classic pace · The original challenge",
-          turboLevel: "Turbo",
-          turboDescription: "Fast pace · For snake masters",
+          levelSelectTitle: "Choose difficulty",
+          levelSelectDescription: "Choose a difficulty to start playing.",
+          easy: "Easy",
+          normal: "Normal",
+          hard: "Hard",
+          easyDescription: "A slower pace for a relaxed game.",
+          normalDescription: "Classic speed with a steady challenge.",
+          hardDescription: "A fast start for experienced players.",
+          playerName: "Player name",
+          savePlayerName: "Save name",
+          playerNameSaved: "Player name saved.",
+          playerNameSaveError: "The name could not be saved on this device.",
+          playerNameRequired: "Enter a player name.",
+          defaultPlayer: "Player",
+          leaderboardEmpty: "No scores yet. Finish a game to get on the board!",
           backToMenu: "Back to menu",
           back: "Back",
           musicVolume: "Music volume",
           volumeDescription: "Adjust background music volume.",
-          chooseLevel: "Choose level",
+          chooseLevel: "Choose difficulty",
           mainMenu: "Main menu",
           finalScore: "Final score:",
           languageLabel: "Language",
@@ -881,22 +1279,33 @@
           appName: "贪吃蛇",
           subtitle: "霓虹贪吃蛇 · 经典街机",
           settings: "设置",
+          newGameLabel: "新游戏",
+          highScoresTitle: "最高分",
+          moreGamesTitle: "更多游戏",
+          moreGamesMessage: "更多游戏即将推出！",
           menuTitle: "霓虹贪吃蛇",
           menuEyebrow: "霓虹街机 · 即刻出发",
           menuDescription: "吃掉发光食物，让蛇变长，挑战你的最高分。",
-          levelSelectTitle: "选择关卡",
-          levelSelectDescription: "选择你想挑战的速度。",
-          easyLevel: "简单",
-          easyDescription: "轻松速度 · 适合新手",
-          classicLevel: "经典",
-          classicDescription: "经典速度 · 原汁原味的挑战",
-          turboLevel: "极速",
-          turboDescription: "高速模式 · 献给贪吃蛇高手",
+          levelSelectTitle: "选择难度",
+          levelSelectDescription: "选择一个难度开始游戏。",
+          easy: "简单",
+          normal: "普通",
+          hard: "困难",
+          easyDescription: "速度较慢，适合轻松游玩。",
+          normalDescription: "经典速度，挑战适中。",
+          hardDescription: "高速开局，适合熟练玩家。",
+          playerName: "玩家名称",
+          savePlayerName: "保存名称",
+          playerNameSaved: "玩家名称已保存。",
+          playerNameSaveError: "无法在此设备保存玩家名称。",
+          playerNameRequired: "请输入玩家名称。",
+          defaultPlayer: "玩家",
+          leaderboardEmpty: "还没有成绩，完成一局来登上排行榜吧！",
           backToMenu: "返回主菜单",
           back: "返回",
           musicVolume: "背景音乐音量",
           volumeDescription: "拖动滑块调整背景音乐大小。",
-          chooseLevel: "选择关卡",
+          chooseLevel: "选择难度",
           mainMenu: "主菜单",
           finalScore: "最终得分：",
           languageLabel: "语言",
@@ -948,22 +1357,33 @@
           appName: "스네이크",
           subtitle: "네온 스네이크 · 클래식 아케이드",
           settings: "설정",
+          newGameLabel: "새 게임",
+          highScoresTitle: "최고 점수",
+          moreGamesTitle: "더 많은 게임",
+          moreGamesMessage: "더 많은 게임이 곧 출시됩니다!",
           menuTitle: "네온 스네이크",
           menuEyebrow: "작은 아케이드, 반짝이는 모험",
           menuDescription: "빛나는 먹이를 먹고 길게 자라 최고 점수에 도전하세요.",
-          levelSelectTitle: "레벨 선택",
-          levelSelectDescription: "시작 속도를 선택하세요.",
-          easyLevel: "쉬움",
-          easyDescription: "여유로운 속도 · 초보자에게 추천",
-          classicLevel: "클래식",
-          classicDescription: "클래식 속도 · 오리지널 도전",
-          turboLevel: "터보",
-          turboDescription: "빠른 속도 · 스네이크 고수를 위한 모드",
+          levelSelectTitle: "난이도 선택",
+          levelSelectDescription: "난이도를 선택하고 게임을 시작하세요.",
+          easy: "쉬움",
+          normal: "보통",
+          hard: "어려움",
+          easyDescription: "여유롭게 즐길 수 있는 느린 속도입니다.",
+          normalDescription: "고전적인 속도와 적당한 도전입니다.",
+          hardDescription: "숙련된 플레이어를 위한 빠른 시작입니다.",
+          playerName: "플레이어 이름",
+          savePlayerName: "이름 저장",
+          playerNameSaved: "플레이어 이름을 저장했습니다.",
+          playerNameSaveError: "이 기기에 이름을 저장할 수 없습니다.",
+          playerNameRequired: "플레이어 이름을 입력하세요.",
+          defaultPlayer: "플레이어",
+          leaderboardEmpty: "아직 기록이 없습니다. 한 판을 완료하고 순위에 도전하세요!",
           backToMenu: "메인 메뉴로",
           back: "뒤로",
           musicVolume: "배경 음악 음량",
           volumeDescription: "슬라이더로 배경 음악 음량을 조절하세요.",
-          chooseLevel: "레벨 선택",
+          chooseLevel: "난이도 선택",
           mainMenu: "메인 메뉴",
           finalScore: "최종 점수:",
           languageLabel: "언어",
@@ -1021,6 +1441,7 @@
 
       const cells = 24;
       const cellSize = canvas.width / cells;
+      const renderInterval = 1000 / 60;
       const backgroundCanvas = document.createElement("canvas");
       backgroundCanvas.width = canvas.width;
       backgroundCanvas.height = canvas.height;
@@ -1046,14 +1467,19 @@
       let score = 0;
       let best = loadBest();
       let language = loadLanguage();
+      let playerName = loadPlayerName();
       let musicVolume = loadMusicVolume();
       let state = "menu";
       let activeScreen = "menu";
       let settingsReturnScreen = "menu";
       let settingsResumeGame = false;
-      let selectedLevel = 2;
+      const difficultyNames = ["easy", "normal", "hard"];
+      const difficultyIntervals = { easy: 220, normal: 205, hard: 190 };
+      let selectedDifficulty = "easy";
       let lastTime = 0;
       let accumulator = 0;
+      let renderAccumulator = 0;
+      let animationFrameId = null;
       let touchStart = null;
       let musicEnabled = true;
       let audioContext = null;
@@ -1063,6 +1489,7 @@
       let musicStarting = false;
 
       bestElement.textContent = formatScore(best);
+      playerNameInput.value = playerName;
       drawBackground();
       resetBoard();
       applyLanguage();
@@ -1124,6 +1551,7 @@
         updateMusicButton();
         updateStats();
         updateVolumeDisplay();
+        if (activeScreen === "highScores") renderLeaderboard();
       }
 
       function loadBest() {
@@ -1133,6 +1561,107 @@
           console.warn("Unable to read the local high score.", error);
           return 0;
         }
+      }
+
+      function loadPlayerName() {
+        try {
+          return localStorage.getItem("neon-snake-player-name")?.trim().slice(0, 16) || translate("defaultPlayer");
+        } catch (error) {
+          console.warn("Unable to read the saved player name.", error);
+          return translate("defaultPlayer");
+        }
+      }
+
+      function loadLeaderboard() {
+        try {
+          const savedScores = localStorage.getItem("neon-snake-leaderboard");
+          if (!savedScores) return [];
+          const entries = JSON.parse(savedScores);
+          if (!Array.isArray(entries)) throw new TypeError("Leaderboard data must be an array.");
+          return entries
+            .filter((entry) =>
+              entry &&
+              typeof entry.name === "string" &&
+              Number.isInteger(entry.score) && entry.score >= 0 &&
+              (difficultyNames.includes(entry.difficulty) ||
+                (Number.isInteger(entry.level) && entry.level >= 1 && entry.level <= 10)) &&
+              Number.isFinite(entry.date)
+            )
+            .map((entry) => ({
+              name: entry.name.trim().slice(0, 16) || translate("defaultPlayer"),
+              score: entry.score,
+              difficulty: difficultyNames.includes(entry.difficulty)
+                ? entry.difficulty
+                : difficultyNames[Math.min(entry.level, difficultyNames.length) - 1],
+              date: entry.date
+            }))
+            .sort((a, b) =>
+              b.score - a.score ||
+              difficultyNames.indexOf(b.difficulty) - difficultyNames.indexOf(a.difficulty) ||
+              a.date - b.date
+            )
+            .slice(0, 10);
+        } catch (error) {
+          console.warn("Unable to read the local leaderboard.", error);
+          return [];
+        }
+      }
+
+      function saveLeaderboard(entries) {
+        try {
+          localStorage.setItem("neon-snake-leaderboard", JSON.stringify(entries));
+        } catch (error) {
+          console.warn("Unable to save the local leaderboard.", error);
+        }
+      }
+
+      function recordScore() {
+        const entries = loadLeaderboard();
+        entries.push({
+          name: playerName,
+          score,
+          difficulty: selectedDifficulty,
+          date: Date.now()
+        });
+        entries.sort((a, b) =>
+          b.score - a.score ||
+          difficultyNames.indexOf(b.difficulty) - difficultyNames.indexOf(a.difficulty) ||
+          a.date - b.date
+        );
+        const topScores = entries.slice(0, 10);
+        saveLeaderboard(topScores);
+        renderLeaderboard(topScores);
+      }
+
+      function renderLeaderboard(entries = loadLeaderboard()) {
+        leaderboardList.replaceChildren();
+        if (entries.length === 0) {
+          const emptyMessage = document.createElement("li");
+          emptyMessage.className = "leaderboard-empty";
+          emptyMessage.textContent = translate("leaderboardEmpty");
+          leaderboardList.append(emptyMessage);
+          return;
+        }
+        const fragment = document.createDocumentFragment();
+        entries.forEach((entry, index) => {
+          const row = document.createElement("li");
+          row.className = "leaderboard-entry";
+          const rank = document.createElement("span");
+          rank.className = "leaderboard-rank";
+          rank.textContent = String(index + 1).padStart(2, "0");
+          const name = document.createElement("span");
+          name.className = "leaderboard-player";
+          name.textContent = entry.name;
+          const difficulty = document.createElement("span");
+          difficulty.className = "leaderboard-level";
+          difficulty.textContent = translate(entry.difficulty);
+          const result = document.createElement("span");
+          result.className = "leaderboard-score";
+          result.textContent = formatScore(entry.score);
+          row.append(rank, name, difficulty, result);
+          fragment.append(row);
+        });
+        leaderboardList.append(fragment);
       }
 
       function saveBest() {
@@ -1179,14 +1708,13 @@
       function updateStats() {
         scoreElement.textContent = formatScore(score);
         bestElement.textContent = formatScore(best);
-        speedElement.textContent = translate("level", {
-          level: Math.min(10, selectedLevel + Math.floor(score / 5))
-        });
+        speedElement.textContent = translate(selectedDifficulty);
       }
 
       function showScreen(name) {
         activeScreen = name;
         gameRoot.dataset.activeScreen = name;
+        document.body.dataset.activeScreen = name;
         overlay.classList.toggle("hidden", name === "game");
         settingsButton.disabled = name === "settings";
         screens.forEach((screen) => {
@@ -1195,7 +1723,7 @@
       }
 
       function updateGameControls() {
-        const visible = selectedLevel > 0 && ["running", "paused", "over"].includes(state);
+        const visible = selectedDifficulty && ["running", "paused", "over"].includes(state);
         pauseButton.hidden = !visible;
         musicButton.hidden = !visible;
         document.getElementById("restartButton").hidden = !visible;
@@ -1241,6 +1769,19 @@
         showScreen("levels");
       }
 
+      function openHighScores() {
+        highScoreElement.textContent = formatScore(best);
+        playerNameInput.value = playerName;
+        renderLeaderboard();
+        state = "highScores";
+        showScreen("highScores");
+      }
+
+      function openMoreGames() {
+        state = "moreGames";
+        showScreen("moreGames");
+      }
+
       function returnToMenu() {
         stopMusic();
         state = "menu";
@@ -1248,8 +1789,9 @@
         showScreen("menu");
       }
 
-      function startSelectedLevel(level) {
-        selectedLevel = level;
+      function startSelectedDifficulty(difficulty) {
+        if (!difficultyNames.includes(difficulty)) return;
+        selectedDifficulty = difficulty;
         resetBoard();
         startGame();
       }
@@ -1258,12 +1800,13 @@
         previousSnake = snake.map((segment) => ({ ...segment }));
         state = "running";
         accumulator = 0;
+        renderAccumulator = 0;
         lastTime = 0;
         showScreen("game");
         updateGameControls();
         updatePauseButton();
         syncMusic();
-        requestAnimationFrame(gameLoop);
+        if (animationFrameId === null) animationFrameId = requestAnimationFrame(gameLoop);
       }
 
       function togglePause() {
@@ -1411,6 +1954,7 @@
             state = "over";
             stopMusic();
             victoryScoreElement.textContent = formatScore(score);
+            recordScore();
             showScreen("victory");
             updatePauseButton();
             updateGameControls();
@@ -1427,42 +1971,85 @@
         state = "over";
         stopMusic();
         finalScoreElement.textContent = formatScore(score);
+        recordScore();
         showScreen("gameOver");
         updatePauseButton();
         updateGameControls();
       }
 
       function gameLoop(timestamp) {
-        if (state !== "running") return;
-        if (!lastTime) lastTime = timestamp;
-        accumulator += Math.min(timestamp - lastTime, 100);
+        animationFrameId = null;
+        if (state !== "running") {
+          lastTime = 0;
+          return;
+        }
+
+        const elapsed = lastTime ? Math.max(0, timestamp - lastTime) : 0;
+        const frameDelta = Math.min(elapsed, 100);
+        accumulator += frameDelta;
+        renderAccumulator += frameDelta;
         lastTime = timestamp;
-        const levelIntervals = [175, 145, 115];
-        const interval = Math.max(55, levelIntervals[selectedLevel - 1] - Math.floor(score / 5) * 8);
+        const interval = Math.max(difficultyIntervals[selectedDifficulty] - Math.floor(score / 5) * 5, 60);
         while (accumulator >= interval && state === "running") {
           step();
           accumulator -= interval;
         }
-        draw(accumulator / interval);
-        if (state === "running") requestAnimationFrame(gameLoop);
+        if (renderAccumulator >= renderInterval - 0.1 || elapsed === 0) {
+          draw(accumulator / interval);
+          renderAccumulator = Math.max(0, renderAccumulator - renderInterval);
+        }
+        if (state === "running") animationFrameId = requestAnimationFrame(gameLoop);
       }
 
       function drawBackground() {
-        backgroundContext.fillStyle = "#0a111d";
+        backgroundContext.fillStyle = "#c5efed";
         backgroundContext.fillRect(0, 0, canvas.width, canvas.height);
-        backgroundContext.strokeStyle = "rgba(142, 169, 201, .055)";
-        backgroundContext.lineWidth = 1;
-        for (let i = 0; i <= cells; i += 1) {
-          const position = i * cellSize + .5;
+        const skyGlow = backgroundContext.createRadialGradient(190, 120, 12, 300, 250, 440);
+        skyGlow.addColorStop(0, "rgba(255, 255, 255, .36)");
+        skyGlow.addColorStop(1, "rgba(255, 255, 255, 0)");
+        backgroundContext.fillStyle = skyGlow;
+        backgroundContext.fillRect(0, 0, canvas.width, canvas.height);
+        drawCloud(68, 92, .94, .82);
+        drawCloud(298, 70, 1.12, .82);
+        drawCloud(532, 145, 1.02, .8);
+        drawCloud(160, 390, 1.12, .72);
+        drawCloud(432, 452, 1.25, .78);
+      }
+
+      function drawCloud(x, y, scale, opacity) {
+        const puffs = [
+          [-.92, .1, .44],
+          [-.56, -.16, .56],
+          [-.13, -.3, .67],
+          [.32, -.14, .57],
+          [.76, .08, .48],
+          [0, .16, .9]
+        ];
+        backgroundContext.save();
+        backgroundContext.translate(x, y);
+        backgroundContext.scale(scale, scale * .72);
+        backgroundContext.globalAlpha = opacity;
+        puffs.forEach(([offsetX, offsetY, radius]) => {
+          const centerX = offsetX * 45;
+          const centerY = offsetY * 32;
+          const puffRadius = radius * 48;
+          const cloudGradient = backgroundContext.createRadialGradient(
+            centerX - puffRadius * .18,
+            centerY - puffRadius * .2,
+            puffRadius * .06,
+            centerX,
+            centerY,
+            puffRadius
+          );
+          cloudGradient.addColorStop(0, "rgba(255, 255, 255, .78)");
+          cloudGradient.addColorStop(.58, "rgba(255, 255, 255, .38)");
+          cloudGradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+          backgroundContext.fillStyle = cloudGradient;
           backgroundContext.beginPath();
-          backgroundContext.moveTo(position, 0);
-          backgroundContext.lineTo(position, canvas.height);
-          backgroundContext.stroke();
-          backgroundContext.beginPath();
-          backgroundContext.moveTo(0, position);
-          backgroundContext.lineTo(canvas.width, position);
-          backgroundContext.stroke();
-        }
+          backgroundContext.arc(centerX, centerY, puffRadius, 0, Math.PI * 2);
+          backgroundContext.fill();
+        });
+        backgroundContext.restore();
       }
 
       function draw(progress = 0) {
@@ -1538,7 +2125,7 @@
           ctx.stroke();
           ctx.restore();
 
-          if (index === 0) drawEyes(segment);
+          if (index === 0) drawEyes(xPosition, yPosition);
         });
       }
 
@@ -1570,9 +2157,9 @@
         return `rgb(${channels.join(",")})`;
       }
 
-      function drawEyes(head) {
-        const centerX = head.x * cellSize + cellSize / 2;
-        const centerY = head.y * cellSize + cellSize / 2;
+      function drawEyes(xPosition, yPosition) {
+        const centerX = xPosition * cellSize + cellSize / 2;
+        const centerY = yPosition * cellSize + cellSize / 2;
         const forwardX = direction.x * 4;
         const forwardY = direction.y * 4;
         const sideX = direction.y * 4;
@@ -1587,7 +2174,13 @@
 
       document.getElementById("menuStartButton").addEventListener("click", openLevelSelect);
       document.getElementById("menuSettingsButton").addEventListener("click", openSettings);
+      document.getElementById("menuArtworkStartButton").addEventListener("click", openLevelSelect);
+      document.getElementById("menuHighScoresButton").addEventListener("click", openHighScores);
+      document.getElementById("menuArtworkSettingsButton").addEventListener("click", openSettings);
+      document.getElementById("menuMoreGamesButton").addEventListener("click", openMoreGames);
       document.getElementById("levelsBackButton").addEventListener("click", returnToMenu);
+      document.getElementById("highScoresBackButton").addEventListener("click", returnToMenu);
+      document.getElementById("moreGamesBackButton").addEventListener("click", returnToMenu);
       document.getElementById("settingsBackButton").addEventListener("click", closeSettings);
       document.getElementById("resumeButton").addEventListener("click", startGame);
       document.getElementById("pausedMenuButton").addEventListener("click", returnToMenu);
@@ -1597,8 +2190,27 @@
       document.getElementById("victoryMenuButton").addEventListener("click", returnToMenu);
       document.querySelectorAll(".level-choice").forEach((button) => {
         button.addEventListener("click", () => {
-          startSelectedLevel(Number(button.dataset.level));
+          startSelectedDifficulty(button.dataset.difficulty);
         });
+      });
+      document.getElementById("playerNameForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const name = playerNameInput.value.trim().slice(0, 16);
+        if (!name) {
+          playerNameInput.setCustomValidity(translate("playerNameRequired"));
+          playerNameInput.reportValidity();
+          return;
+        }
+        playerNameInput.setCustomValidity("");
+        try {
+          localStorage.setItem("neon-snake-player-name", name);
+        } catch (error) {
+          console.warn("Unable to save the player name.", error);
+          playerNameStatus.textContent = translate("playerNameSaveError");
+          return;
+        }
+        playerName = name;
+        playerNameStatus.textContent = translate("playerNameSaved");
       });
       document.querySelectorAll("[data-screen-action='settings']").forEach((button) => {
         button.addEventListener("click", openSettings);
@@ -1633,7 +2245,10 @@
       });
 
       document.addEventListener("keydown", (event) => {
-        if (keyDirections[event.key]) {
+        const target = event.target;
+        const isEditing = target instanceof HTMLElement &&
+          (target.isContentEditable || ["INPUT", "SELECT", "TEXTAREA"].includes(target.tagName));
+        if (keyDirections[event.key] && state === "running" && !isEditing) {
           event.preventDefault();
           setDirection(keyDirections[event.key]);
         } else if (event.code === "Space") {
@@ -1648,6 +2263,9 @@
         } else if (event.key === "Escape" && state === "levels") {
           event.preventDefault();
           returnToMenu();
+        } else if (event.key === "Escape" && (state === "highScores" || state === "moreGames")) {
+          event.preventDefault();
+          returnToMenu();
         }
       });
 
@@ -1660,19 +2278,33 @@
 
       const boardWrap = document.getElementById("boardWrap");
       boardWrap.addEventListener("touchstart", (event) => {
+        if (state !== "running" || touchStart) return;
         const touch = event.changedTouches[0];
-        touchStart = { x: touch.clientX, y: touch.clientY };
+        if (!touch) return;
+        touchStart = {
+          identifier: touch.identifier,
+          x: touch.clientX,
+          y: touch.clientY
+        };
       }, { passive: true });
       boardWrap.addEventListener("touchend", (event) => {
         if (!touchStart) return;
-        const touch = event.changedTouches[0];
+        const touch = Array.from(event.changedTouches)
+          .find((changedTouch) => changedTouch.identifier === touchStart.identifier);
+        if (!touch) return;
         const deltaX = touch.clientX - touchStart.x;
         const deltaY = touch.clientY - touchStart.y;
         touchStart = null;
-        if (Math.max(Math.abs(deltaX), Math.abs(deltaY)) < 18) return;
+        if (Math.hypot(deltaX, deltaY) < 18) return;
         setDirection(Math.abs(deltaX) > Math.abs(deltaY)
           ? (deltaX > 0 ? "right" : "left")
           : (deltaY > 0 ? "down" : "up"));
+      }, { passive: true });
+      boardWrap.addEventListener("touchcancel", (event) => {
+        if (!touchStart) return;
+        const trackedTouch = Array.from(event.changedTouches)
+          .some((changedTouch) => changedTouch.identifier === touchStart.identifier);
+        if (trackedTouch) touchStart = null;
       }, { passive: true });
     })();
   </script>
