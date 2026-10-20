@@ -1560,7 +1560,7 @@
       let previousSnake = [];
       let food;
       let direction;
-      let nextDirection;
+      const directionQueue = [];
       let score = 0;
       let best = loadBest();
       let language = loadLanguage();
@@ -1774,9 +1774,9 @@
 
       function resetBoard() {
         snake = [{ x: 11, y: 12 }, { x: 10, y: 12 }, { x: 9, y: 12 }];
-        previousSnake = snake.map((segment) => ({ ...segment }));
+        previousSnake = snake.slice();
         direction = directions.right;
-        nextDirection = directions.right;
+        directionQueue.length = 0;
         score = 0;
         placeFood();
         updateStats();
@@ -1893,7 +1893,7 @@
       }
 
       function startGame() {
-        previousSnake = snake.map((segment) => ({ ...segment }));
+        previousSnake = snake.slice();
         state = "running";
         accumulator = 0;
         renderAccumulator = 0;
@@ -2016,13 +2016,15 @@
         const candidate = directions[name];
         if (!candidate) return;
         if (state !== "running") return;
-        if (candidate.x === -direction.x && candidate.y === -direction.y) return;
-        nextDirection = candidate;
+        const plannedDirection = directionQueue[directionQueue.length - 1] || direction;
+        if (candidate.x === -plannedDirection.x && candidate.y === -plannedDirection.y) return;
+        if (candidate.x === plannedDirection.x && candidate.y === plannedDirection.y) return;
+        if (directionQueue.length < 2) directionQueue.push(candidate);
       }
 
       function step() {
-        direction = nextDirection;
-        previousSnake = snake.map((segment) => ({ ...segment }));
+        direction = directionQueue.shift() || direction;
+        previousSnake = snake.slice();
         const head = {
           x: snake[0].x + direction.x,
           y: snake[0].y + direction.y
@@ -2364,35 +2366,71 @@
       });
 
       const boardWrap = document.getElementById("boardWrap");
-      boardWrap.addEventListener("touchstart", (event) => {
-        if (state !== "running" || touchStart) return;
-        const touch = event.changedTouches[0];
-        if (!touch) return;
-        touchStart = {
-          identifier: touch.identifier,
-          x: touch.clientX,
-          y: touch.clientY
+      const supportsTouchInput = window.matchMedia("(pointer: coarse)").matches ||
+        navigator.maxTouchPoints > 0 ||
+        "ontouchstart" in window;
+      if (supportsTouchInput) {
+        const interactiveSelector = "button, input, select, textarea, a, [contenteditable='true']";
+        const getTouchDirection = (deltaX, deltaY) => {
+          if (Math.max(Math.abs(deltaX), Math.abs(deltaY)) < 5) return null;
+          return Math.abs(deltaX) > Math.abs(deltaY)
+            ? (deltaX > 0 ? "right" : "left")
+            : (deltaY > 0 ? "down" : "up");
         };
-      }, { passive: true });
-      boardWrap.addEventListener("touchend", (event) => {
-        if (!touchStart) return;
-        const touch = Array.from(event.changedTouches)
-          .find((changedTouch) => changedTouch.identifier === touchStart.identifier);
-        if (!touch) return;
-        const deltaX = touch.clientX - touchStart.x;
-        const deltaY = touch.clientY - touchStart.y;
-        touchStart = null;
-        if (Math.hypot(deltaX, deltaY) < 18) return;
-        setDirection(Math.abs(deltaX) > Math.abs(deltaY)
-          ? (deltaX > 0 ? "right" : "left")
-          : (deltaY > 0 ? "down" : "up"));
-      }, { passive: true });
-      boardWrap.addEventListener("touchcancel", (event) => {
-        if (!touchStart) return;
-        const trackedTouch = Array.from(event.changedTouches)
-          .some((changedTouch) => changedTouch.identifier === touchStart.identifier);
-        if (trackedTouch) touchStart = null;
-      }, { passive: true });
+
+        gameRoot.addEventListener("touchstart", (event) => {
+          const target = event.target;
+          if (
+            state !== "running" ||
+            touchStart ||
+            !(target instanceof Element) ||
+            target.closest(interactiveSelector)
+          ) return;
+          const touch = event.changedTouches[0];
+          if (!touch) return;
+          const canvasRect = canvas.getBoundingClientRect();
+          const headX = canvasRect.left + (snake[0].x + .5) * canvasRect.width / cells;
+          const headY = canvasRect.top + (snake[0].y + .5) * canvasRect.height / cells;
+          touchStart = {
+            identifier: touch.identifier,
+            x: touch.clientX,
+            y: touch.clientY
+          };
+          const directionToTouch = getTouchDirection(touch.clientX - headX, touch.clientY - headY);
+          if (directionToTouch) setDirection(directionToTouch);
+          event.preventDefault();
+        }, { passive: false });
+
+        gameRoot.addEventListener("touchmove", (event) => {
+          if (!touchStart || state !== "running") return;
+          const touch = Array.from(event.changedTouches)
+            .find((changedTouch) => changedTouch.identifier === touchStart.identifier);
+          if (!touch) return;
+          const deltaX = touch.clientX - touchStart.x;
+          const deltaY = touch.clientY - touchStart.y;
+          const dragDirection = getTouchDirection(deltaX, deltaY);
+          if (dragDirection) {
+            setDirection(dragDirection);
+            touchStart.x = touch.clientX;
+            touchStart.y = touch.clientY;
+          }
+          event.preventDefault();
+        }, { passive: false });
+
+        gameRoot.addEventListener("touchend", (event) => {
+          if (!touchStart) return;
+          const trackedTouch = Array.from(event.changedTouches)
+            .some((changedTouch) => changedTouch.identifier === touchStart.identifier);
+          if (trackedTouch) touchStart = null;
+        }, { passive: true });
+
+        gameRoot.addEventListener("touchcancel", (event) => {
+          if (!touchStart) return;
+          const trackedTouch = Array.from(event.changedTouches)
+            .some((changedTouch) => changedTouch.identifier === touchStart.identifier);
+          if (trackedTouch) touchStart = null;
+        }, { passive: true });
+      }
     })();
   </script>
 </body>
