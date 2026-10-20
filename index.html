@@ -1542,7 +1542,6 @@
 
       const cells = 24;
       const cellSize = canvas.width / cells;
-      const renderInterval = 1000 / 60;
       const directions = {
         up: { x: 0, y: -1 },
         down: { x: 0, y: 1 },
@@ -1575,7 +1574,6 @@
       let selectedDifficulty = "easy";
       let lastTime = 0;
       let accumulator = 0;
-      let renderAccumulator = 0;
       let animationFrameId = null;
       let touchStart = null;
       let musicEnabled = true;
@@ -1896,7 +1894,6 @@
         previousSnake = snake.slice();
         state = "running";
         accumulator = 0;
-        renderAccumulator = 0;
         lastTime = 0;
         showScreen("game");
         updateGameControls();
@@ -2083,19 +2080,14 @@
         }
 
         const elapsed = lastTime ? Math.max(0, timestamp - lastTime) : 0;
-        const frameDelta = Math.min(elapsed, 100);
-        accumulator += frameDelta;
-        renderAccumulator += frameDelta;
+        accumulator += Math.min(elapsed, 250);
         lastTime = timestamp;
         const interval = Math.max(difficultyIntervals[selectedDifficulty] - Math.floor(score / 5) * 5, 60);
         while (accumulator >= interval && state === "running") {
           step();
           accumulator -= interval;
         }
-        if (renderAccumulator >= renderInterval - 0.1 || elapsed === 0) {
-          draw(accumulator / interval);
-          renderAccumulator = Math.max(0, renderAccumulator - renderInterval);
-        }
+        draw(Math.min(1, accumulator / interval));
         if (state === "running") animationFrameId = requestAnimationFrame(gameLoop);
       }
 
