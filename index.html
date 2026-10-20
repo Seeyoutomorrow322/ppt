@@ -2363,7 +2363,12 @@
         "ontouchstart" in window;
       if (supportsTouchInput) {
         const interactiveSelector = "button, input, select, textarea, a, [contenteditable='true']";
-        const getTouchDirection = (deltaX, deltaY) => {
+        const getTouchDirection = (touchX, touchY) => {
+          const canvasRect = canvas.getBoundingClientRect();
+          const headX = canvasRect.left + (snake[0].x + .5) * canvasRect.width / cells;
+          const headY = canvasRect.top + (snake[0].y + .5) * canvasRect.height / cells;
+          const deltaX = touchX - headX;
+          const deltaY = touchY - headY;
           if (Math.max(Math.abs(deltaX), Math.abs(deltaY)) < 5) return null;
           return Math.abs(deltaX) > Math.abs(deltaY)
             ? (deltaX > 0 ? "right" : "left")
@@ -2380,15 +2385,12 @@
           ) return;
           const touch = event.changedTouches[0];
           if (!touch) return;
-          const canvasRect = canvas.getBoundingClientRect();
-          const headX = canvasRect.left + (snake[0].x + .5) * canvasRect.width / cells;
-          const headY = canvasRect.top + (snake[0].y + .5) * canvasRect.height / cells;
           touchStart = {
             identifier: touch.identifier,
             x: touch.clientX,
             y: touch.clientY
           };
-          const directionToTouch = getTouchDirection(touch.clientX - headX, touch.clientY - headY);
+          const directionToTouch = getTouchDirection(touchStart.x, touchStart.y);
           if (directionToTouch) setDirection(directionToTouch);
           event.preventDefault();
         }, { passive: false });
@@ -2398,13 +2400,11 @@
           const touch = Array.from(event.changedTouches)
             .find((changedTouch) => changedTouch.identifier === touchStart.identifier);
           if (!touch) return;
-          const deltaX = touch.clientX - touchStart.x;
-          const deltaY = touch.clientY - touchStart.y;
-          const dragDirection = getTouchDirection(deltaX, deltaY);
+          touchStart.x = touch.clientX;
+          touchStart.y = touch.clientY;
+          const dragDirection = getTouchDirection(touchStart.x, touchStart.y);
           if (dragDirection) {
             setDirection(dragDirection);
-            touchStart.x = touch.clientX;
-            touchStart.y = touch.clientY;
           }
           event.preventDefault();
         }, { passive: false });
