@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#c5efed">
+  <meta name="theme-color" content="#bfe8ff">
   <title>Snake · Neon Arcade</title>
   <style>
     :root {
-      color-scheme: dark;
+      color-scheme: light;
       --viewport-height: 100vh;
       --bg: #080d17;
       --panel: #101827;
@@ -34,42 +34,66 @@
       padding: 28px 18px;
       overflow-x: hidden;
       background:
-        radial-gradient(ellipse at 14% 20%, rgba(49, 222, 193, .09), transparent 34%),
-        radial-gradient(ellipse at 86% 78%, rgba(147, 91, 255, .11), transparent 38%),
-        var(--bg);
+        radial-gradient(ellipse at 18% 14%, rgba(255, 255, 255, .55), transparent 38%),
+        linear-gradient(180deg, #b7e5ff 0%, #d9f2ff 58%, #e9f9ff 100%);
       color: var(--text);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
     }
 
-    body::before, body::after {
+    /* Keep the animated sky behind every game screen and control. */
+    .sky-clouds {
       position: fixed;
-      z-index: -1;
+      z-index: 0;
       inset: 0;
+      overflow: hidden;
       pointer-events: none;
+      contain: paint;
+    }
+
+    .cloud {
+      position: absolute;
+      top: var(--cloud-top);
+      left: 0;
+      width: var(--cloud-width);
+      height: calc(var(--cloud-width) * .34);
+      opacity: .72;
+      filter: blur(5px);
+      transform: translate3d(-40vw, 0, 0) scale(var(--cloud-scale, 1));
+      animation: cloud-drift var(--cloud-duration) linear var(--cloud-delay) infinite;
+      will-change: transform;
+    }
+
+    .cloud::before {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background:
+        radial-gradient(ellipse at 15% 70%, rgba(255,255,255,.92) 0 18%, transparent 19%),
+        radial-gradient(ellipse at 31% 48%, rgba(255,255,255,.96) 0 23%, transparent 24%),
+        radial-gradient(ellipse at 49% 35%, rgba(255,255,255,.98) 0 29%, transparent 30%),
+        radial-gradient(ellipse at 68% 52%, rgba(255,255,255,.94) 0 24%, transparent 25%),
+        radial-gradient(ellipse at 85% 69%, rgba(255,255,255,.88) 0 17%, transparent 18%),
+        radial-gradient(ellipse at 50% 78%, rgba(255,255,255,.76) 0 36%, transparent 37%);
       content: "";
     }
 
-    body::before {
-      background: linear-gradient(112deg, transparent 18%, rgba(84, 230, 210, .035) 48%, transparent 76%);
-      background-size: 220% 100%;
-      animation: ambient-sweep 18s ease-in-out infinite alternate;
-    }
+    .cloud:nth-child(1) { --cloud-top: 8%; --cloud-width: 250px; --cloud-duration: 76s; --cloud-delay: -43s; }
+    .cloud:nth-child(2) { --cloud-top: 25%; --cloud-width: 330px; --cloud-duration: 94s; --cloud-delay: -71s; --cloud-scale: .88; }
+    .cloud:nth-child(3) { --cloud-top: 43%; --cloud-width: 220px; --cloud-duration: 68s; --cloud-delay: -21s; --cloud-scale: 1.12; }
+    .cloud:nth-child(4) { --cloud-top: 61%; --cloud-width: 300px; --cloud-duration: 88s; --cloud-delay: -58s; --cloud-scale: .92; }
+    .cloud:nth-child(5) { --cloud-top: 78%; --cloud-width: 240px; --cloud-duration: 72s; --cloud-delay: -34s; --cloud-scale: 1.08; }
+    .cloud:nth-child(6) { --cloud-top: 91%; --cloud-width: 360px; --cloud-duration: 102s; --cloud-delay: -82s; --cloud-scale: .84; }
 
-    body::after {
-      opacity: .32;
-      background-image: radial-gradient(rgba(169, 208, 223, .4) .7px, transparent .7px);
-      background-size: 44px 44px;
-      mask-image: linear-gradient(135deg, #000, transparent 65%);
-    }
-
-    @keyframes ambient-sweep {
-      from { background-position: 0% 50%; }
-      to { background-position: 100% 50%; }
+    @keyframes cloud-drift {
+      from { transform: translate3d(-40vw, 0, 0) scale(var(--cloud-scale, 1)); }
+      to { transform: translate3d(calc(100vw + 40vw), 0, 0) scale(var(--cloud-scale, 1)); }
     }
 
     button { font: inherit; }
 
     .game {
+      position: relative;
+      z-index: 1;
       width: min(100%, 760px);
     }
 
@@ -763,27 +787,26 @@
     body[data-active-screen="highScores"],
     body[data-active-screen="game"] {
       background:
-        radial-gradient(ellipse at 32% 40%, rgba(255, 255, 255, .48), transparent 60%),
-        radial-gradient(ellipse at 78% 68%, rgba(95, 199, 194, .13), transparent 58%),
-        #c5efed;
+        radial-gradient(ellipse at 32% 35%, rgba(255, 255, 255, .45), transparent 58%),
+        linear-gradient(180deg, #b7e5ff 0%, #d9f2ff 58%, #e9f9ff 100%);
       color: #284d3f;
     }
-    body[data-active-screen="game"]::before {
-      background: none;
-      animation: none;
-    }
-    body[data-active-screen="game"]::after { opacity: 0; }
     .game[data-active-screen="game"] .board-shell {
-      padding: 0;
-      overflow: visible;
-      border: 0;
-      border-radius: 0;
-      background: none;
-      box-shadow: none;
+      width: min(100%, calc(var(--viewport-height) - 310px));
+      padding: clamp(10px, 2vw, 18px);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, .82);
+      border-radius: 28px;
+      background: rgba(255, 255, 255, .42);
+      box-shadow:
+        0 22px 60px rgba(65, 135, 168, .15),
+        inset 0 1px 0 rgba(255, 255, 255, .72);
+      backdrop-filter: blur(8px);
     }
     .game[data-active-screen="game"] .board-wrap {
-      overflow: visible;
-      border-radius: 0;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, .64);
+      border-radius: 18px;
       background: transparent;
     }
     .game[data-active-screen="game"] .stat {
@@ -796,7 +819,76 @@
     .game[data-active-screen="game"] .stat-value { color: #284d3f; }
     .game[data-active-screen="game"] .stat.current .stat-value { color: #238452; }
     .game[data-active-screen="game"] .stat.level .stat-value { color: #21808a; }
-    .game[data-active-screen="game"] .score-row { gap: 0; }
+    .game[data-active-screen="game"] .score-row {
+      width: min(100%, 600px);
+      margin: 0 auto 14px;
+      gap: clamp(8px, 2vw, 18px);
+    }
+    @media (max-height: 700px) {
+      .game[data-active-screen="game"] .board-shell {
+        width: min(100%, calc(var(--viewport-height) - 260px));
+      }
+    }
+    @media (max-width: 540px) and (max-height: 700px) {
+      .game[data-active-screen="game"] .board-shell {
+        width: min(100%, calc(var(--viewport-height) - 340px));
+      }
+    }
+    @media (max-height: 500px) {
+      .game[data-active-screen="game"] .board-shell {
+        width: min(100%, calc(var(--viewport-height) - 185px));
+      }
+    }
+    @media (max-width: 540px) and (max-height: 500px) {
+      .game[data-active-screen="game"] .board-shell {
+        width: min(100%, calc(var(--viewport-height) - 205px));
+      }
+    }
+    .game[data-active-screen="paused"] .overlay,
+    .game[data-active-screen="gameOver"] .overlay,
+    .game[data-active-screen="victory"] .overlay {
+      background: rgba(214, 239, 255, .28);
+      backdrop-filter: blur(3px);
+    }
+    .game[data-active-screen="paused"] .overlay-card,
+    .game[data-active-screen="gameOver"] .overlay-card,
+    .game[data-active-screen="victory"] .overlay-card {
+      padding: clamp(22px, 5vw, 34px);
+      border: 1px solid rgba(255, 255, 255, .88);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, .86);
+      box-shadow: 0 18px 55px rgba(54, 126, 166, .16);
+      color: #244b61;
+      backdrop-filter: blur(12px);
+    }
+    .game[data-active-screen="paused"] .overlay-screen h2,
+    .game[data-active-screen="gameOver"] .overlay-screen h2,
+    .game[data-active-screen="victory"] .overlay-screen h2 { color: #244b61; }
+    .game[data-active-screen="paused"] .overlay-screen p,
+    .game[data-active-screen="gameOver"] .overlay-screen p,
+    .game[data-active-screen="victory"] .overlay-screen p { color: #557587; }
+    .game[data-active-screen="paused"] .overlay-icon,
+    .game[data-active-screen="gameOver"] .overlay-icon,
+    .game[data-active-screen="victory"] .overlay-icon {
+      border-color: rgba(83, 177, 220, .24);
+      background: rgba(121, 205, 240, .2);
+      color: #398bb1;
+      box-shadow: none;
+    }
+    .game[data-active-screen="paused"] .primary-button,
+    .game[data-active-screen="gameOver"] .primary-button,
+    .game[data-active-screen="victory"] .primary-button {
+      background: #72c8e8;
+      color: #143c50;
+      box-shadow: 0 8px 22px rgba(64, 158, 197, .2);
+    }
+    .game[data-active-screen="paused"] .secondary-button,
+    .game[data-active-screen="gameOver"] .secondary-button,
+    .game[data-active-screen="victory"] .secondary-button {
+      border-color: rgba(75, 145, 174, .22);
+      background: rgba(255, 255, 255, .72);
+      color: #35596b;
+    }
     .game[data-active-screen="levels"] .board-shell,
     .game[data-active-screen="highScores"] .board-shell {
       overflow: visible;
@@ -974,6 +1066,15 @@
   </style>
 </head>
 <body>
+  <!-- Decorative, animated clouds stay behind the game and its dialogs. -->
+  <div class="sky-clouds" aria-hidden="true">
+    <span class="cloud"></span>
+    <span class="cloud"></span>
+    <span class="cloud"></span>
+    <span class="cloud"></span>
+    <span class="cloud"></span>
+    <span class="cloud"></span>
+  </div>
   <main class="game" id="gameRoot">
     <header class="topbar">
       <div class="brand">
@@ -1436,16 +1537,12 @@
         { key: "gold", points: 3, weight: 25, color: "#ffd166" },
         { key: "crystal", points: 5, weight: 10, color: "#6de8ff" }
       ];
-      const snakePalette = ["#c6ff7a", "#4effb8", "#38d9ff", "#9a78ff"]
+      const snakePalette = ["#d9f79b", "#a8e8d1", "#a9dff1", "#c7b7ed"]
         .map((color) => color.match(/[a-f\d]{2}/gi).map((channel) => parseInt(channel, 16)));
 
       const cells = 24;
       const cellSize = canvas.width / cells;
       const renderInterval = 1000 / 60;
-      const backgroundCanvas = document.createElement("canvas");
-      backgroundCanvas.width = canvas.width;
-      backgroundCanvas.height = canvas.height;
-      const backgroundContext = backgroundCanvas.getContext("2d");
       const directions = {
         up: { x: 0, y: -1 },
         down: { x: 0, y: 1 },
@@ -1490,7 +1587,6 @@
 
       bestElement.textContent = formatScore(best);
       playerNameInput.value = playerName;
-      drawBackground();
       resetBoard();
       applyLanguage();
       volumeSlider.value = String(musicVolume);
@@ -2001,59 +2097,9 @@
         if (state === "running") animationFrameId = requestAnimationFrame(gameLoop);
       }
 
-      function drawBackground() {
-        backgroundContext.fillStyle = "#c5efed";
-        backgroundContext.fillRect(0, 0, canvas.width, canvas.height);
-        const skyGlow = backgroundContext.createRadialGradient(190, 120, 12, 300, 250, 440);
-        skyGlow.addColorStop(0, "rgba(255, 255, 255, .36)");
-        skyGlow.addColorStop(1, "rgba(255, 255, 255, 0)");
-        backgroundContext.fillStyle = skyGlow;
-        backgroundContext.fillRect(0, 0, canvas.width, canvas.height);
-        drawCloud(68, 92, .94, .82);
-        drawCloud(298, 70, 1.12, .82);
-        drawCloud(532, 145, 1.02, .8);
-        drawCloud(160, 390, 1.12, .72);
-        drawCloud(432, 452, 1.25, .78);
-      }
-
-      function drawCloud(x, y, scale, opacity) {
-        const puffs = [
-          [-.92, .1, .44],
-          [-.56, -.16, .56],
-          [-.13, -.3, .67],
-          [.32, -.14, .57],
-          [.76, .08, .48],
-          [0, .16, .9]
-        ];
-        backgroundContext.save();
-        backgroundContext.translate(x, y);
-        backgroundContext.scale(scale, scale * .72);
-        backgroundContext.globalAlpha = opacity;
-        puffs.forEach(([offsetX, offsetY, radius]) => {
-          const centerX = offsetX * 45;
-          const centerY = offsetY * 32;
-          const puffRadius = radius * 48;
-          const cloudGradient = backgroundContext.createRadialGradient(
-            centerX - puffRadius * .18,
-            centerY - puffRadius * .2,
-            puffRadius * .06,
-            centerX,
-            centerY,
-            puffRadius
-          );
-          cloudGradient.addColorStop(0, "rgba(255, 255, 255, .78)");
-          cloudGradient.addColorStop(.58, "rgba(255, 255, 255, .38)");
-          cloudGradient.addColorStop(1, "rgba(255, 255, 255, 0)");
-          backgroundContext.fillStyle = cloudGradient;
-          backgroundContext.beginPath();
-          backgroundContext.arc(centerX, centerY, puffRadius, 0, Math.PI * 2);
-          backgroundContext.fill();
-        });
-        backgroundContext.restore();
-      }
-
       function draw(progress = 0) {
-        ctx.drawImage(backgroundCanvas, 0, 0);
+        // Clear to transparency so the animated page sky remains visible below the board.
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         if (food) {
           const centerX = food.x * cellSize + cellSize / 2;
@@ -2108,24 +2154,39 @@
           const previous = previousSnake[Math.min(index, previousSnake.length - 1)] || segment;
           const xPosition = previous.x + (segment.x - previous.x) * progress;
           const yPosition = previous.y + (segment.y - previous.y) * progress;
-          const inset = index === 0 ? 2 : 2.5;
-          const x = xPosition * cellSize + inset;
-          const y = yPosition * cellSize + inset;
-          const size = cellSize - inset * 2;
+          // Slightly separated, rounded cells give the body a plump jelly-candy look.
+          const size = cellSize * (index === 0 ? .9 : .76);
+          const x = xPosition * cellSize + (cellSize - size) / 2;
+          const y = yPosition * cellSize + (cellSize - size) / 2;
+          const radius = size * (index === 0 ? .43 : .4);
           const color = snakeColorAt(index / Math.max(1, snake.length - 1));
           ctx.save();
           ctx.shadowColor = color;
-          ctx.shadowBlur = index === 0 ? 17 : 5;
-          ctx.fillStyle = color;
-          roundedRect(ctx, x, y, size, size, index === 0 ? 7 : 6);
+          ctx.shadowBlur = index === 0 ? 11 : 7;
+          const jellyGradient = ctx.createRadialGradient(
+            x + size * .3,
+            y + size * .23,
+            size * .04,
+            x + size * .52,
+            y + size * .57,
+            size * .76
+          );
+          jellyGradient.addColorStop(0, "rgba(255, 255, 255, .94)");
+          jellyGradient.addColorStop(.22, color);
+          jellyGradient.addColorStop(1, color);
+          ctx.fillStyle = jellyGradient;
+          roundedRect(ctx, x, y, size, size, radius);
           ctx.fill();
           ctx.shadowBlur = 0;
-          ctx.lineWidth = 1;
-          ctx.strokeStyle = "rgba(255,255,255,.28)";
+          ctx.lineWidth = 1.2;
+          ctx.strokeStyle = "rgba(255,255,255,.72)";
           ctx.stroke();
+          ctx.fillStyle = "rgba(255,255,255,.42)";
+          roundedRect(ctx, x + size * .2, y + size * .12, size * .46, Math.max(2, size * .12), size * .08);
+          ctx.fill();
           ctx.restore();
 
-          if (index === 0) drawEyes(xPosition, yPosition);
+          if (index === 0) drawEyes(xPosition, yPosition, size);
         });
       }
 
@@ -2157,19 +2218,45 @@
         return `rgb(${channels.join(",")})`;
       }
 
-      function drawEyes(xPosition, yPosition) {
+      function drawEyes(xPosition, yPosition, headSize) {
         const centerX = xPosition * cellSize + cellSize / 2;
         const centerY = yPosition * cellSize + cellSize / 2;
-        const forwardX = direction.x * 4;
-        const forwardY = direction.y * 4;
-        const sideX = direction.y * 4;
-        const sideY = -direction.x * 4;
-        ctx.fillStyle = "#17251a";
+        const forwardX = direction.x * headSize * .16;
+        const forwardY = direction.y * headSize * .16;
+        const sideX = direction.y * headSize * .19;
+        const sideY = -direction.x * headSize * .19;
+        const eyeRadius = headSize * .145;
+        const cheekRadius = headSize * .09;
+        ctx.save();
+        ctx.fillStyle = "rgba(255, 143, 174, .62)";
         for (const side of [-1, 1]) {
           ctx.beginPath();
-          ctx.arc(centerX + forwardX + sideX * side, centerY + forwardY + sideY * side, 1.8, 0, Math.PI * 2);
+          ctx.arc(
+            centerX + direction.x * headSize * .02 + sideX * side * 1.75,
+            centerY + direction.y * headSize * .02 + sideY * side * 1.75,
+            cheekRadius,
+            0,
+            Math.PI * 2
+          );
           ctx.fill();
         }
+        for (const side of [-1, 1]) {
+          const eyeX = centerX + forwardX + sideX * side;
+          const eyeY = centerY + forwardY + sideY * side;
+          ctx.fillStyle = "rgba(255, 255, 255, .98)";
+          ctx.beginPath();
+          ctx.arc(eyeX, eyeY, eyeRadius, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "#344150";
+          ctx.beginPath();
+          ctx.arc(eyeX + direction.x * eyeRadius * .24, eyeY + direction.y * eyeRadius * .24, eyeRadius * .56, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "#fff";
+          ctx.beginPath();
+          ctx.arc(eyeX - eyeRadius * .2, eyeY - eyeRadius * .25, eyeRadius * .2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
       }
 
       document.getElementById("menuStartButton").addEventListener("click", openLevelSelect);
