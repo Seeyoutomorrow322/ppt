@@ -548,6 +548,39 @@
     .volume-slider { width: 100%; accent-color: var(--green); cursor: pointer; }
     .volume-value { min-width: 44px; color: var(--green); font-size: 13px; font-variant-numeric: tabular-nums; text-align: right; }
     .settings-language { width: 100%; }
+    .voice-rate-value { min-width: 44px; color: var(--green); font-size: 13px; font-variant-numeric: tabular-nums; text-align: right; }
+
+    .praise-toast {
+      position: absolute;
+      z-index: 2;
+      top: 14px;
+      left: 50%;
+      display: flex;
+      width: min(calc(100% - 24px), 390px);
+      min-height: 82px;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 16px 8px 8px;
+      border: 1px solid rgba(255, 255, 255, .88);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, .9);
+      box-shadow: 0 12px 30px rgba(54, 126, 166, .2);
+      color: #244b61;
+      transform: translateX(-50%);
+      backdrop-filter: blur(12px);
+      pointer-events: none;
+    }
+
+    .praise-toast[hidden] { display: none; }
+    .praise-character { width: 68px; height: 68px; flex: 0 0 68px; object-fit: contain; }
+    .praise-character.praising { animation: praise-bounce .75s ease-in-out 2; }
+    .praise-character.speaking { animation: praise-bounce .55s ease-in-out infinite alternate; }
+    .praise-message { font-size: clamp(13px, 3.2vw, 16px); font-weight: 750; line-height: 1.45; text-align: left; }
+
+    @keyframes praise-bounce {
+      from { transform: translateY(2px) rotate(-5deg) scale(.96); }
+      to { transform: translateY(-5px) rotate(5deg) scale(1.04); }
+    }
 
     .level-options { display: grid; gap: 10px; margin: 20px 0; text-align: left; }
     .level-choice {
@@ -577,7 +610,7 @@
     }
     .leaderboard-entry {
       display: grid;
-      grid-template-columns: 30px minmax(0, 1fr) auto auto;
+      grid-template-columns: 42px minmax(0, 1fr);
       align-items: center;
       gap: 9px;
       padding: 9px 12px;
@@ -587,30 +620,28 @@
       color: #284d3f;
       font-size: 13px;
     }
+    .leaderboard-entry.is-top-1 { border-color: rgba(222, 171, 45, .65); background: linear-gradient(100deg, rgba(255, 225, 125, .48), rgba(255, 255, 255, .7)); }
+    .leaderboard-entry.is-top-2 { border-color: rgba(137, 156, 170, .58); background: linear-gradient(100deg, rgba(207, 222, 232, .55), rgba(255, 255, 255, .68)); }
+    .leaderboard-entry.is-top-3 { border-color: rgba(186, 125, 84, .55); background: linear-gradient(100deg, rgba(238, 190, 151, .42), rgba(255, 255, 255, .68)); }
     .leaderboard-rank { color: #478e70; font-weight: 800; }
-    .leaderboard-player { overflow: hidden; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
-    .leaderboard-level { color: #547466; font-size: 11px; }
     .leaderboard-score { color: #228154; font-weight: 900; font-variant-numeric: tabular-nums; }
     .leaderboard-empty { color: #547466; text-align: center; }
-    .player-name-form { display: grid; gap: 8px; margin: 16px 0; text-align: left; }
-    .player-name-form label { color: #365b4b; font-size: 13px; font-weight: 700; }
-    .player-name-row { display: flex; gap: 8px; }
-    .player-name-input {
-      min-width: 0;
-      flex: 1;
-      padding: 0 12px;
-      border: 1px solid rgba(71, 148, 132, .28);
-      border-radius: 10px;
-      background: rgba(255, 255, 255, .8);
-      color: #284d3f;
-      font: inherit;
+    .leaderboard-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .leaderboard-status { min-height: 1.2em; margin: 8px 0; color: #547466; font-size: 12px; }
+    .game[data-active-screen="highScores"] .overlay {
+      background: rgba(12, 20, 32, .58);
+      backdrop-filter: blur(8px);
     }
-    .player-name-form .secondary-button {
-      border-color: rgba(71, 148, 132, .25);
-      background: rgba(255, 255, 255, .6);
-      color: #365b4b;
+    .game[data-active-screen="highScores"] .overlay-card {
+      padding: clamp(20px, 5vw, 32px);
+      border: 1px solid rgba(255, 255, 255, .88);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, .9);
+      box-shadow: 0 18px 55px rgba(54, 126, 166, .2);
+      color: #244b61;
     }
-    .player-name-status { min-height: 1em; margin: 0 !important; color: #478e70 !important; font-size: 12px !important; }
+    .game[data-active-screen="highScores"] .overlay-screen h2 { color: #244b61; }
+    .game[data-active-screen="highScores"] .overlay-screen p { color: #557587; }
 
     .bottom-row {
       display: flex;
@@ -1059,6 +1090,217 @@
     .menu-artwork-button[data-action="settings"] { top: 67.8%; }
     .menu-artwork-button[data-action="more-games"] { top: 77.3%; }
 
+    .top-actions .icon-button {
+      position: relative;
+      min-height: 42px;
+      flex: 0 0 auto;
+      gap: 7px;
+      padding-inline: 12px;
+      border: 1px solid rgba(255, 255, 255, .86);
+      border-radius: 15px;
+      background: linear-gradient(145deg, rgba(255, 255, 255, .94), rgba(227, 246, 255, .88));
+      box-shadow:
+        0 4px 10px rgba(79, 145, 176, .12),
+        0 0 16px rgba(150, 225, 244, .14),
+        inset 0 1px 0 rgba(255, 255, 255, .95);
+      color: #315d72;
+      font-weight: 750;
+      line-height: 1;
+      white-space: nowrap;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, .7);
+      transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .top-actions .icon-button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      border-color: rgba(111, 196, 217, .65);
+      background: linear-gradient(145deg, #fff, #e2f8f5);
+      box-shadow:
+        0 7px 15px rgba(79, 145, 176, .16),
+        0 0 20px rgba(126, 218, 220, .22),
+        inset 0 1px 0 #fff;
+    }
+    .top-actions .icon-button:active:not(:disabled) {
+      transform: translateY(1px) scale(.97);
+      box-shadow: 0 2px 5px rgba(79, 145, 176, .14), inset 0 2px 4px rgba(85, 156, 177, .12);
+    }
+    .top-actions .icon-button:disabled { cursor: default; opacity: .72; }
+    .top-actions .icon-button:focus-visible {
+      outline: 3px solid rgba(101, 190, 216, .62);
+      outline-offset: 3px;
+    }
+    .top-actions .icon-button .top-button-icon {
+      display: inline-grid;
+      width: 1.15em;
+      flex: 0 0 1.15em;
+      place-items: center;
+      font-size: 1.2em;
+      line-height: 1;
+    }
+    .top-actions .icon-button > span:not(.top-button-icon) {
+      display: inline;
+      white-space: nowrap;
+    }
+    @media (max-width: 540px) {
+      .topbar { flex-wrap: wrap; }
+      .top-actions {
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 6px;
+      }
+      .top-actions .icon-button {
+        min-height: 38px;
+        gap: 5px;
+        padding-inline: 9px;
+        font-size: clamp(10px, 2.8vw, 12px);
+      }
+    }
+
+    .game[data-active-screen="paused"] .overlay,
+    .game[data-active-screen="gameOver"] .overlay,
+    .game[data-active-screen="victory"] .overlay,
+    .game[data-active-screen="highScores"] .overlay {
+      background: rgba(164, 218, 239, .3);
+      backdrop-filter: blur(7px);
+    }
+    .game[data-active-screen="paused"] .overlay-card,
+    .game[data-active-screen="gameOver"] .overlay-card,
+    .game[data-active-screen="victory"] .overlay-card,
+    .game[data-active-screen="highScores"] .overlay-card {
+      border: 1px solid rgba(255, 255, 255, .94);
+      border-radius: 27px;
+      background: linear-gradient(150deg, rgba(255, 255, 255, .95), rgba(241, 251, 255, .92));
+      box-shadow:
+        0 22px 60px rgba(65, 135, 168, .2),
+        0 4px 14px rgba(91, 167, 192, .1),
+        inset 0 1px 0 rgba(255, 255, 255, .95);
+      color: #31576a;
+      backdrop-filter: blur(14px);
+    }
+    .game[data-active-screen="paused"] .overlay-screen h2,
+    .game[data-active-screen="gameOver"] .overlay-screen h2,
+    .game[data-active-screen="victory"] .overlay-screen h2,
+    .game[data-active-screen="highScores"] .overlay-screen h2 { color: #31576a; }
+    .game[data-active-screen="paused"] .overlay-screen p,
+    .game[data-active-screen="gameOver"] .overlay-screen p,
+    .game[data-active-screen="victory"] .overlay-screen p,
+    .game[data-active-screen="highScores"] .overlay-screen p { color: #557789; }
+    .game[data-active-screen="paused"] .primary-button,
+    .game[data-active-screen="gameOver"] .primary-button,
+    .game[data-active-screen="victory"] .primary-button,
+    .game[data-active-screen="highScores"] .primary-button {
+      border: 1px solid rgba(255, 255, 255, .78);
+      border-radius: 15px;
+      background: linear-gradient(120deg, #b6f1d7, #a8e8ee);
+      box-shadow: 0 7px 17px rgba(93, 179, 174, .22), inset 0 1px 0 rgba(255, 255, 255, .8);
+      color: #285b5b;
+      transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .game[data-active-screen="paused"] .primary-button:hover,
+    .game[data-active-screen="gameOver"] .primary-button:hover,
+    .game[data-active-screen="victory"] .primary-button:hover,
+    .game[data-active-screen="highScores"] .primary-button:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.035);
+      box-shadow: 0 10px 21px rgba(93, 179, 174, .27), inset 0 1px 0 rgba(255, 255, 255, .9);
+    }
+    .game[data-active-screen="paused"] .primary-button:active,
+    .game[data-active-screen="gameOver"] .primary-button:active,
+    .game[data-active-screen="victory"] .primary-button:active,
+    .game[data-active-screen="highScores"] .primary-button:active {
+      transform: translateY(1px) scale(.98);
+      box-shadow: 0 3px 8px rgba(93, 179, 174, .2), inset 0 2px 4px rgba(69, 142, 144, .12);
+    }
+    .game[data-active-screen="paused"] .secondary-button,
+    .game[data-active-screen="gameOver"] .secondary-button,
+    .game[data-active-screen="victory"] .secondary-button,
+    .game[data-active-screen="highScores"] .secondary-button {
+      border: 1px solid rgba(124, 183, 201, .3);
+      border-radius: 15px;
+      background: linear-gradient(145deg, rgba(255, 255, 255, .96), rgba(232, 246, 251, .9));
+      box-shadow: 0 4px 10px rgba(79, 145, 176, .09), inset 0 1px 0 #fff;
+      color: #416779;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .game[data-active-screen="paused"] .secondary-button:hover,
+    .game[data-active-screen="gameOver"] .secondary-button:hover,
+    .game[data-active-screen="victory"] .secondary-button:hover,
+    .game[data-active-screen="highScores"] .secondary-button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(97, 174, 196, .56);
+      background: linear-gradient(145deg, #fff, #e5f7f7);
+      box-shadow: 0 7px 14px rgba(79, 145, 176, .13), inset 0 1px 0 #fff;
+    }
+    .game[data-active-screen="paused"] .secondary-button:active,
+    .game[data-active-screen="gameOver"] .secondary-button:active,
+    .game[data-active-screen="victory"] .secondary-button:active,
+    .game[data-active-screen="highScores"] .secondary-button:active {
+      transform: translateY(1px) scale(.985);
+      box-shadow: 0 2px 5px rgba(79, 145, 176, .1), inset 0 2px 4px rgba(85, 156, 177, .1);
+    }
+    .game[data-active-screen="paused"] .overlay-icon,
+    .game[data-active-screen="gameOver"] .overlay-icon,
+    .game[data-active-screen="victory"] .overlay-icon,
+    .game[data-active-screen="highScores"] .overlay-icon {
+      border-color: rgba(111, 196, 217, .28);
+      border-radius: 20px;
+      background: linear-gradient(145deg, rgba(203, 244, 239, .8), rgba(205, 233, 250, .82));
+      box-shadow: 0 5px 14px rgba(102, 181, 194, .12), inset 0 1px 0 rgba(255, 255, 255, .9);
+      color: #438ca0;
+    }
+
+    .leaderboard {
+      gap: 8px;
+      margin: 16px 0;
+    }
+    .leaderboard-entry {
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 12px;
+      padding: 10px 14px;
+      border-color: rgba(129, 185, 200, .24);
+      border-radius: 15px;
+      background: linear-gradient(110deg, rgba(255, 255, 255, .82), rgba(236, 249, 252, .76));
+      box-shadow: 0 3px 9px rgba(77, 139, 165, .06), inset 0 1px 0 rgba(255, 255, 255, .8);
+      font-size: 14px;
+    }
+    .leaderboard-entry.is-top-1 {
+      border-color: rgba(220, 177, 79, .58);
+      background: linear-gradient(110deg, rgba(255, 235, 174, .78), rgba(255, 252, 235, .9));
+      box-shadow: 0 4px 12px rgba(202, 163, 74, .12), inset 0 1px 0 rgba(255, 255, 255, .9);
+    }
+    .leaderboard-entry.is-top-2 {
+      border-color: rgba(147, 171, 185, .48);
+      background: linear-gradient(110deg, rgba(224, 237, 244, .88), rgba(250, 253, 255, .9));
+    }
+    .leaderboard-entry.is-top-3 {
+      border-color: rgba(194, 145, 111, .48);
+      background: linear-gradient(110deg, rgba(248, 222, 200, .74), rgba(255, 249, 243, .9));
+    }
+    .leaderboard-rank {
+      display: grid;
+      min-width: 34px;
+      min-height: 30px;
+      place-items: center;
+      border-radius: 10px;
+      background: rgba(202, 235, 232, .7);
+      color: #428273;
+      font-size: 13px;
+      font-weight: 850;
+    }
+    .leaderboard-entry.is-top-1 .leaderboard-rank { background: #f5d778; color: #765814; }
+    .leaderboard-entry.is-top-2 .leaderboard-rank { background: #d5e3eb; color: #536d7b; }
+    .leaderboard-entry.is-top-3 .leaderboard-rank { background: #ecc5a7; color: #805333; }
+    .leaderboard-score { justify-self: end; color: #287a67; font-size: 15px; letter-spacing: .035em; }
+    .leaderboard-entry.is-top-1 .leaderboard-score { color: #9a721a; }
+    .leaderboard-entry.is-top-2 .leaderboard-score { color: #526e80; }
+    .leaderboard-entry.is-top-3 .leaderboard-score { color: #8a5e3c; }
+    .leaderboard-empty { padding: 18px 12px; }
+    .leaderboard-actions { margin-bottom: 8px; }
+    .leaderboard-status { color: #557789; }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
       *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
@@ -1085,10 +1327,11 @@
         </div>
       </div>
       <div class="top-actions">
-        <button class="icon-button" id="settingsButton" type="button" aria-label="Settings" title="Settings">⚙ <span data-i18n="settings">Settings</span></button>
-        <button class="icon-button" id="pauseButton" type="button" aria-label="Pause game" title="Pause / resume (Esc or Space)" hidden>Ⅱ <span data-i18n="pause">Pause</span></button>
-        <button class="icon-button music-button" id="musicButton" type="button" aria-label="Turn background music off" aria-pressed="true" title="Toggle background music" hidden>♫ <span data-i18n="musicOn">Music on</span></button>
-        <button class="icon-button" id="restartButton" type="button" aria-label="Restart game" title="Restart" hidden>↻ <span data-i18n="restartShort">Restart</span></button>
+        <button class="icon-button" id="rankingButton" type="button" aria-label="High Scores" title="High Scores" data-i18n-aria-label="highScoresTitle"><span class="top-button-icon" aria-hidden="true">★</span><span data-i18n="highScoresTitle">High Scores</span></button>
+        <button class="icon-button" id="settingsButton" type="button" aria-label="Settings" title="Settings"><span class="top-button-icon" aria-hidden="true">⚙</span><span data-i18n="settings">Settings</span></button>
+        <button class="icon-button" id="pauseButton" type="button" aria-label="Pause game" title="Pause / resume (Esc or Space)" hidden><span class="top-button-icon" aria-hidden="true">Ⅱ</span><span data-i18n="pause">Pause</span></button>
+        <button class="icon-button music-button" id="musicButton" type="button" aria-label="Turn background music off" aria-pressed="true" title="Toggle background music" hidden><span class="top-button-icon" aria-hidden="true">♫</span><span data-i18n="musicOn">Music on</span></button>
+        <button class="icon-button" id="restartButton" type="button" aria-label="Restart game" title="Restart" hidden><span class="top-button-icon" aria-hidden="true">↻</span><span data-i18n="restartShort">Restart</span></button>
       </div>
     </header>
 
@@ -1101,6 +1344,10 @@
     <section class="board-shell" aria-label="Snake game area" data-i18n-aria-label="gameArea">
       <div class="board-wrap" id="boardWrap">
         <canvas id="gameCanvas" width="600" height="600" role="img" aria-label="Snake game board" data-i18n-aria-label="gameBoard"></canvas>
+        <div class="praise-toast" id="praiseToast" role="status" aria-live="polite" hidden>
+          <img class="praise-character" id="praiseCharacter" src="images/snake-character.png" alt="" aria-hidden="true">
+          <span class="praise-message" id="praiseMessage"></span>
+        </div>
         <div class="overlay" id="overlay">
           <div class="overlay-card">
             <section class="overlay-screen" data-screen="menu">
@@ -1178,20 +1425,16 @@
               </div>
               <button class="secondary-button" id="levelsBackButton" type="button" data-i18n="backToMenu">Back to menu</button>
             </section>
-            <section class="overlay-screen" data-screen="highScores" hidden>
+            <section class="overlay-screen" data-screen="highScores" role="dialog" aria-modal="true" aria-labelledby="highScoresHeading" hidden>
               <div class="overlay-icon" aria-hidden="true">★</div>
-              <h2 data-i18n="highScoresTitle">High Scores</h2>
-              <p><span data-i18n="bestLabel">BEST</span> <strong id="highScoreValue">000</strong></p>
-              <form class="player-name-form" id="playerNameForm">
-                <label for="playerNameInput" data-i18n="playerName">Player name</label>
-                <div class="player-name-row">
-                  <input class="player-name-input" id="playerNameInput" type="text" maxlength="16" autocomplete="nickname" required>
-                  <button class="secondary-button" type="submit" data-i18n="savePlayerName">Save name</button>
-                </div>
-                <p class="player-name-status" id="playerNameStatus" role="status"></p>
-              </form>
+              <h2 id="highScoresHeading" data-i18n="highScoresTitle">High Scores</h2>
               <ol class="leaderboard" id="leaderboardList" aria-label="Leaderboard" data-i18n-aria-label="highScoresTitle"></ol>
-              <button class="secondary-button" id="highScoresBackButton" type="button" data-i18n="backToMenu">Back to menu</button>
+              <p class="leaderboard-status" id="leaderboardStatus" role="status" aria-live="polite"></p>
+              <div class="leaderboard-actions">
+                <button class="secondary-button" id="refreshRankingsButton" type="button" data-i18n="refreshRankings">Refresh</button>
+                <button class="secondary-button" id="clearRankingsButton" type="button" data-i18n="clearRankings">Clear all</button>
+              </div>
+              <button class="secondary-button" id="highScoresBackButton" type="button" data-i18n="close">Close</button>
             </section>
             <section class="overlay-screen" data-screen="moreGames" hidden>
               <div class="overlay-icon" aria-hidden="true">🎮</div>
@@ -1209,6 +1452,14 @@
                   <span class="volume-row">
                     <input class="volume-slider" id="volumeSlider" type="range" min="0" max="100" step="1" value="70" data-i18n-aria-label="musicVolume">
                     <output class="volume-value" id="volumeValue" for="volumeSlider">70%</output>
+                  </span>
+                </label>
+                <label class="setting-field" for="voiceRateSlider">
+                  <span class="setting-label" data-i18n="voiceRate">Praise voice speed</span>
+                  <span class="setting-description" data-i18n="voiceRateDescription">Adjust how quickly praise is spoken.</span>
+                  <span class="volume-row">
+                    <input class="volume-slider" id="voiceRateSlider" type="range" min="0.6" max="1.4" step="0.1" value="1" data-i18n-aria-label="voiceRate">
+                    <output class="voice-rate-value" id="voiceRateValue" for="voiceRateSlider">1.0×</output>
                   </span>
                 </label>
                 <label class="setting-field" for="languageSelect">
@@ -1280,18 +1531,22 @@
       const gameRoot = document.getElementById("gameRoot");
       const overlay = document.getElementById("overlay");
       const screens = [...document.querySelectorAll(".overlay-screen")];
+      const rankingButton = document.getElementById("rankingButton");
       const settingsButton = document.getElementById("settingsButton");
       const pauseButton = document.getElementById("pauseButton");
       const musicButton = document.getElementById("musicButton");
       const languageSelect = document.getElementById("languageSelect");
       const volumeSlider = document.getElementById("volumeSlider");
       const volumeValue = document.getElementById("volumeValue");
+      const voiceRateSlider = document.getElementById("voiceRateSlider");
+      const voiceRateValue = document.getElementById("voiceRateValue");
+      const praiseToast = document.getElementById("praiseToast");
+      const praiseCharacter = document.getElementById("praiseCharacter");
+      const praiseMessageElement = document.getElementById("praiseMessage");
       const scoreElement = document.getElementById("score");
       const bestElement = document.getElementById("best");
-      const highScoreElement = document.getElementById("highScoreValue");
       const leaderboardList = document.getElementById("leaderboardList");
-      const playerNameInput = document.getElementById("playerNameInput");
-      const playerNameStatus = document.getElementById("playerNameStatus");
+      const leaderboardStatus = document.getElementById("leaderboardStatus");
       const speedElement = document.getElementById("speed");
       const finalScoreElement = document.getElementById("finalScore");
       const victoryScoreElement = document.getElementById("victoryScore");
@@ -1317,17 +1572,20 @@
           easyDescription: "A slower pace for a relaxed game.",
           normalDescription: "Classic speed with a steady challenge.",
           hardDescription: "A fast start for experienced players.",
-          playerName: "Player name",
-          savePlayerName: "Save name",
-          playerNameSaved: "Player name saved.",
-          playerNameSaveError: "The name could not be saved on this device.",
-          playerNameRequired: "Enter a player name.",
-          defaultPlayer: "Player",
           leaderboardEmpty: "No scores yet. Finish a game to get on the board!",
+          refreshRankings: "Refresh",
+          clearRankings: "Clear all",
+          close: "Close",
+          confirmClearRankings: "Clear all saved rankings on this device?",
+          rankingsCleared: "Rankings cleared.",
+          rankingsRefreshed: "Rankings refreshed.",
+          rankingsStorageError: "Rankings could not be saved. Check this browser's local storage settings.",
           backToMenu: "Back to menu",
           back: "Back",
           musicVolume: "Music volume",
           volumeDescription: "Adjust background music volume.",
+          voiceRate: "Praise voice speed",
+          voiceRateDescription: "Adjust how quickly praise is spoken.",
           chooseLevel: "Choose difficulty",
           mainMenu: "Main menu",
           finalScore: "Final score:",
@@ -1395,17 +1653,20 @@
           easyDescription: "速度较慢，适合轻松游玩。",
           normalDescription: "经典速度，挑战适中。",
           hardDescription: "高速开局，适合熟练玩家。",
-          playerName: "玩家名称",
-          savePlayerName: "保存名称",
-          playerNameSaved: "玩家名称已保存。",
-          playerNameSaveError: "无法在此设备保存玩家名称。",
-          playerNameRequired: "请输入玩家名称。",
-          defaultPlayer: "玩家",
           leaderboardEmpty: "还没有成绩，完成一局来登上排行榜吧！",
+          refreshRankings: "刷新",
+          clearRankings: "全部清除",
+          close: "关闭",
+          confirmClearRankings: "要清除此设备上保存的全部排行榜吗？",
+          rankingsCleared: "排行榜已清除。",
+          rankingsRefreshed: "排行榜已刷新。",
+          rankingsStorageError: "无法保存排行榜，请检查浏览器的本地存储设置。",
           backToMenu: "返回主菜单",
           back: "返回",
           musicVolume: "背景音乐音量",
           volumeDescription: "拖动滑块调整背景音乐大小。",
+          voiceRate: "称赞语音速度",
+          voiceRateDescription: "调整称赞语音的播放速度。",
           chooseLevel: "选择难度",
           mainMenu: "主菜单",
           finalScore: "最终得分：",
@@ -1459,7 +1720,7 @@
           subtitle: "네온 스네이크 · 클래식 아케이드",
           settings: "설정",
           newGameLabel: "새 게임",
-          highScoresTitle: "최고 점수",
+          highScoresTitle: "랭킹",
           moreGamesTitle: "더 많은 게임",
           moreGamesMessage: "더 많은 게임이 곧 출시됩니다!",
           menuTitle: "네온 스네이크",
@@ -1473,17 +1734,20 @@
           easyDescription: "여유롭게 즐길 수 있는 느린 속도입니다.",
           normalDescription: "고전적인 속도와 적당한 도전입니다.",
           hardDescription: "숙련된 플레이어를 위한 빠른 시작입니다.",
-          playerName: "플레이어 이름",
-          savePlayerName: "이름 저장",
-          playerNameSaved: "플레이어 이름을 저장했습니다.",
-          playerNameSaveError: "이 기기에 이름을 저장할 수 없습니다.",
-          playerNameRequired: "플레이어 이름을 입력하세요.",
-          defaultPlayer: "플레이어",
           leaderboardEmpty: "아직 기록이 없습니다. 한 판을 완료하고 순위에 도전하세요!",
+          refreshRankings: "새로고침",
+          clearRankings: "전체 초기화",
+          close: "닫기",
+          confirmClearRankings: "이 기기에 저장된 랭킹을 모두 초기화할까요?",
+          rankingsCleared: "랭킹을 초기화했습니다.",
+          rankingsRefreshed: "랭킹을 새로고침했습니다.",
+          rankingsStorageError: "랭킹을 저장할 수 없습니다. 브라우저의 로컬 저장소 설정을 확인하세요.",
           backToMenu: "메인 메뉴로",
           back: "뒤로",
           musicVolume: "배경 음악 음량",
           volumeDescription: "슬라이더로 배경 음악 음량을 조절하세요.",
+          voiceRate: "칭찬 음성 속도",
+          voiceRateDescription: "칭찬 음성이 재생되는 속도를 조절합니다.",
           chooseLevel: "난이도 선택",
           mainMenu: "메인 메뉴",
           finalScore: "최종 점수:",
@@ -1532,6 +1796,23 @@
           gameOverText: "이번 점수는 <strong>{score}</strong>점이에요. 다시 도전해 보세요!"
         }
       };
+      const praiseMessages = {
+        en: [
+          "Fantastic work! You're doing great!",
+          "Brilliant run! Keep it up!",
+          "Your snake skills are amazing!"
+        ],
+        zh: [
+          "太棒了！你玩得真好！",
+          "表现出色，继续加油！",
+          "你的蛇蛇越来越厉害了！"
+        ],
+        ko: [
+          "정말 잘했어요! 멋진 실력이에요!",
+          "대단해요! 이대로 계속 가요!",
+          "뱀이 쑥쑥 자라고 있어요! 정말 잘하고 있어요!"
+        ]
+      };
       const foodTypes = [
         { key: "berry", points: 1, weight: 65, color: "#ff7188" },
         { key: "gold", points: 3, weight: 25, color: "#ffd166" },
@@ -1563,12 +1844,19 @@
       let score = 0;
       let best = loadBest();
       let language = loadLanguage();
-      let playerName = loadPlayerName();
       let musicVolume = loadMusicVolume();
+      let praiseVoiceRate = loadPraiseVoiceRate();
+      let lastPraiseMilestone = 0;
+      let lastPraiseMessage = null;
+      let praiseToastTimeout = null;
+      let praiseSpeechId = 0;
       let state = "menu";
       let activeScreen = "menu";
       let settingsReturnScreen = "menu";
       let settingsResumeGame = false;
+      let highScoresReturnScreen = "menu";
+      let highScoresReturnState = "menu";
+      let highScoresResumeGame = false;
       const difficultyNames = ["easy", "normal", "hard"];
       const difficultyIntervals = { easy: 220, normal: 205, hard: 190 };
       let selectedDifficulty = "easy";
@@ -1584,11 +1872,12 @@
       let musicStarting = false;
 
       bestElement.textContent = formatScore(best);
-      playerNameInput.value = playerName;
       resetBoard();
       applyLanguage();
       volumeSlider.value = String(musicVolume);
       updateVolumeDisplay();
+      voiceRateSlider.value = String(praiseVoiceRate);
+      updateVoiceRateDisplay();
       showScreen("menu");
       updateGameControls();
       draw();
@@ -1613,6 +1902,20 @@
         }
       }
 
+      function loadPraiseVoiceRate() {
+        try {
+          const savedRate = localStorage.getItem("neon-snake-praise-voice-rate");
+          if (savedRate === null) return 1;
+          const rate = Number(savedRate);
+          return Number.isFinite(rate)
+            ? Math.round(Math.min(1.4, Math.max(0.6, rate)) * 10) / 10
+            : 1;
+        } catch (error) {
+          console.warn("Unable to read the praise voice speed.", error);
+          return 1;
+        }
+      }
+
       function translate(key, values = {}) {
         return translations[language][key].replace(/\{(\w+)\}/g, (match, name) =>
           Object.hasOwn(values, name) ? String(values[name]) : match
@@ -1625,7 +1928,10 @@
         languageSelect.value = language;
         languageSelect.setAttribute("aria-label", translate("languageLabel"));
         languageSelect.title = translate("languageTitle");
+        rankingButton.title = translate("highScoresTitle");
+        rankingButton.setAttribute("aria-label", translate("highScoresTitle"));
         volumeSlider.setAttribute("aria-label", translate("musicVolume"));
+        voiceRateSlider.setAttribute("aria-label", translate("voiceRate"));
         settingsButton.title = translate("settings");
         settingsButton.setAttribute("aria-label", translate("settings"));
         document.querySelectorAll("[data-i18n]").forEach((element) => {
@@ -1657,44 +1963,19 @@
         }
       }
 
-      function loadPlayerName() {
-        try {
-          return localStorage.getItem("neon-snake-player-name")?.trim().slice(0, 16) || translate("defaultPlayer");
-        } catch (error) {
-          console.warn("Unable to read the saved player name.", error);
-          return translate("defaultPlayer");
-        }
-      }
-
       function loadLeaderboard() {
         try {
-          const savedScores = localStorage.getItem("neon-snake-leaderboard");
-          if (!savedScores) return [];
-          const entries = JSON.parse(savedScores);
+          const savedScores = localStorage.getItem("neon-snake-rankings");
+          const legacyScores = savedScores === null
+            ? localStorage.getItem("neon-snake-leaderboard")
+            : null;
+          if (savedScores === null && legacyScores === null) return [];
+          const entries = JSON.parse(savedScores ?? legacyScores);
           if (!Array.isArray(entries)) throw new TypeError("Leaderboard data must be an array.");
-          return entries
-            .filter((entry) =>
-              entry &&
-              typeof entry.name === "string" &&
-              Number.isInteger(entry.score) && entry.score >= 0 &&
-              (difficultyNames.includes(entry.difficulty) ||
-                (Number.isInteger(entry.level) && entry.level >= 1 && entry.level <= 10)) &&
-              Number.isFinite(entry.date)
-            )
-            .map((entry) => ({
-              name: entry.name.trim().slice(0, 16) || translate("defaultPlayer"),
-              score: entry.score,
-              difficulty: difficultyNames.includes(entry.difficulty)
-                ? entry.difficulty
-                : difficultyNames[Math.min(entry.level, difficultyNames.length) - 1],
-              date: entry.date
-            }))
-            .sort((a, b) =>
-              b.score - a.score ||
-              difficultyNames.indexOf(b.difficulty) - difficultyNames.indexOf(a.difficulty) ||
-              a.date - b.date
-            )
-            .slice(0, 10);
+          const scores = entries
+            .map((entry) => typeof entry === "number" ? entry : entry?.score)
+            .filter((entry) => Number.isSafeInteger(entry) && entry >= 0);
+          return [...new Set(scores)].sort((a, b) => b - a).slice(0, 10);
         } catch (error) {
           console.warn("Unable to read the local leaderboard.", error);
           return [];
@@ -1703,26 +1984,18 @@
 
       function saveLeaderboard(entries) {
         try {
-          localStorage.setItem("neon-snake-leaderboard", JSON.stringify(entries));
+          localStorage.setItem("neon-snake-rankings", JSON.stringify(entries));
+          return true;
         } catch (error) {
           console.warn("Unable to save the local leaderboard.", error);
+          return false;
         }
       }
 
       function recordScore() {
         const entries = loadLeaderboard();
-        entries.push({
-          name: playerName,
-          score,
-          difficulty: selectedDifficulty,
-          date: Date.now()
-        });
-        entries.sort((a, b) =>
-          b.score - a.score ||
-          difficultyNames.indexOf(b.difficulty) - difficultyNames.indexOf(a.difficulty) ||
-          a.date - b.date
-        );
-        const topScores = entries.slice(0, 10);
+        if (!entries.includes(score)) entries.push(score);
+        const topScores = entries.sort((a, b) => b - a).slice(0, 10);
         saveLeaderboard(topScores);
         renderLeaderboard(topScores);
       }
@@ -1739,23 +2012,24 @@
         const fragment = document.createDocumentFragment();
         entries.forEach((entry, index) => {
           const row = document.createElement("li");
-          row.className = "leaderboard-entry";
+          row.className = `leaderboard-entry${index < 3 ? ` is-top-${index + 1}` : ""}`;
           const rank = document.createElement("span");
           rank.className = "leaderboard-rank";
-          rank.textContent = String(index + 1).padStart(2, "0");
-          const name = document.createElement("span");
-          name.className = "leaderboard-player";
-          name.textContent = entry.name;
-          const difficulty = document.createElement("span");
-          difficulty.className = "leaderboard-level";
-          difficulty.textContent = translate(entry.difficulty);
+          rank.textContent = `${index + 1}.`;
           const result = document.createElement("span");
           result.className = "leaderboard-score";
-          result.textContent = formatScore(entry.score);
-          row.append(rank, name, difficulty, result);
+          result.textContent = formatScore(entry);
+          row.append(rank, result);
           fragment.append(row);
         });
         leaderboardList.append(fragment);
+      }
+
+      function clearRankings() {
+        if (!window.confirm(translate("confirmClearRankings"))) return;
+        const saved = saveLeaderboard([]);
+        leaderboardStatus.textContent = translate(saved ? "rankingsCleared" : "rankingsStorageError");
+        if (saved) renderLeaderboard([]);
       }
 
       function saveBest() {
@@ -1771,11 +2045,15 @@
       }
 
       function resetBoard() {
+        stopPraiseSpeech();
+        hidePraiseToast();
         snake = [{ x: 11, y: 12 }, { x: 10, y: 12 }, { x: 9, y: 12 }];
         previousSnake = snake.slice();
         direction = directions.right;
         directionQueue.length = 0;
         score = 0;
+        lastPraiseMilestone = 0;
+        lastPraiseMessage = null;
         placeFood();
         updateStats();
       }
@@ -1805,6 +2083,90 @@
         speedElement.textContent = translate(selectedDifficulty);
       }
 
+      function updateVoiceRateDisplay() {
+        voiceRateValue.textContent = `${praiseVoiceRate.toFixed(1)}×`;
+      }
+
+      function savePraiseVoiceRate() {
+        try {
+          localStorage.setItem("neon-snake-praise-voice-rate", String(praiseVoiceRate));
+        } catch (error) {
+          console.warn("Unable to save the praise voice speed.", error);
+        }
+      }
+
+      function checkPraiseMilestone() {
+        const reachedMilestone = Math.floor(score / 10);
+        if (reachedMilestone <= lastPraiseMilestone) return;
+        lastPraiseMilestone = reachedMilestone;
+        showPraiseMessage();
+      }
+
+      function showPraiseMessage() {
+        const availableMessages = praiseMessages[language].filter((message) => message !== lastPraiseMessage);
+        const message = availableMessages[Math.floor(Math.random() * availableMessages.length)];
+        lastPraiseMessage = message;
+        praiseMessageElement.textContent = message;
+        praiseToast.hidden = false;
+        praiseCharacter.classList.remove("praising", "speaking");
+        void praiseCharacter.offsetWidth;
+        praiseCharacter.classList.add("praising");
+        if (praiseToastTimeout !== null) window.clearTimeout(praiseToastTimeout);
+        praiseToastTimeout = window.setTimeout(hidePraiseToast, 5000);
+
+        if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") {
+          console.warn("This browser does not support speech synthesis; showing praise as text only.");
+          return;
+        }
+
+        const currentSpeechId = ++praiseSpeechId;
+        try {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(message);
+          utterance.lang = { en: "en-US", zh: "zh-CN", ko: "ko-KR" }[language];
+          utterance.rate = praiseVoiceRate;
+          const matchingVoice = window.speechSynthesis.getVoices().find((voice) =>
+            voice.lang.toLowerCase().startsWith(language)
+          );
+          if (matchingVoice) utterance.voice = matchingVoice;
+          utterance.onstart = () => {
+            if (currentSpeechId !== praiseSpeechId) return;
+            praiseCharacter.classList.remove("praising");
+            praiseCharacter.classList.add("speaking");
+          };
+          utterance.onend = () => {
+            if (currentSpeechId === praiseSpeechId) praiseCharacter.classList.remove("speaking");
+          };
+          utterance.onerror = (event) => {
+            if (currentSpeechId !== praiseSpeechId) return;
+            praiseCharacter.classList.remove("speaking");
+            console.warn("Unable to speak the praise message.", event.error);
+          };
+          window.speechSynthesis.speak(utterance);
+        } catch (error) {
+          praiseCharacter.classList.remove("speaking");
+          console.error("Unable to start the praise speech.", error);
+        }
+      }
+
+      function hidePraiseToast() {
+        if (praiseToastTimeout !== null) window.clearTimeout(praiseToastTimeout);
+        praiseToastTimeout = null;
+        praiseToast.hidden = true;
+        praiseCharacter.classList.remove("praising", "speaking");
+      }
+
+      function stopPraiseSpeech() {
+        praiseSpeechId += 1;
+        if ("speechSynthesis" in window) {
+          try {
+            window.speechSynthesis.cancel();
+          } catch (error) {
+            console.error("Unable to stop the praise speech.", error);
+          }
+        }
+      }
+
       function showScreen(name) {
         activeScreen = name;
         gameRoot.dataset.activeScreen = name;
@@ -1814,6 +2176,7 @@
         screens.forEach((screen) => {
           screen.hidden = screen.dataset.screen !== name;
         });
+        rankingButton.disabled = name === "highScores";
       }
 
       function updateGameControls() {
@@ -1864,11 +2227,31 @@
       }
 
       function openHighScores() {
-        highScoreElement.textContent = formatScore(best);
-        playerNameInput.value = playerName;
+        if (activeScreen === "highScores") return;
+        highScoresReturnScreen = activeScreen;
+        highScoresReturnState = state;
+        highScoresResumeGame = state === "running";
+        if (highScoresResumeGame) {
+          state = "paused";
+          stopMusic();
+          updatePauseButton();
+        }
+        leaderboardStatus.textContent = "";
         renderLeaderboard();
         state = "highScores";
         showScreen("highScores");
+      }
+
+      function closeHighScores() {
+        const shouldResume = highScoresResumeGame;
+        highScoresResumeGame = false;
+        if (shouldResume) {
+          startGame();
+          return;
+        }
+        state = highScoresReturnState;
+        updateGameControls();
+        showScreen(highScoresReturnScreen);
       }
 
       function openMoreGames() {
@@ -1916,15 +2299,15 @@
       function updatePauseButton() {
         const paused = state === "paused";
         pauseButton.innerHTML = paused
-          ? `▶ <span>${translate("resume")}</span>`
-          : `Ⅱ <span>${translate("pause")}</span>`;
+          ? `<span class="top-button-icon" aria-hidden="true">▶</span><span>${translate("resume")}</span>`
+          : `<span class="top-button-icon" aria-hidden="true">Ⅱ</span><span>${translate("pause")}</span>`;
         pauseButton.setAttribute("aria-label", translate(paused ? "resumeGame" : "pauseGame"));
       }
 
       function updateMusicButton() {
         musicButton.innerHTML = musicEnabled
-          ? `♫ <span>${translate("musicOn")}</span>`
-          : `♫ <span>${translate("musicOff")}</span>`;
+          ? `<span class="top-button-icon" aria-hidden="true">♫</span><span>${translate("musicOn")}</span>`
+          : `<span class="top-button-icon" aria-hidden="true">♫</span><span>${translate("musicOff")}</span>`;
         musicButton.setAttribute("aria-label", translate(musicEnabled ? "disableMusic" : "enableMusic"));
         musicButton.setAttribute("aria-pressed", String(musicEnabled));
       }
@@ -2044,6 +2427,7 @@
             best = score;
             saveBest();
           }
+          checkPraiseMilestone();
           if (snake.length === cells * cells) {
             updateStats();
             state = "over";
@@ -2260,7 +2644,12 @@
       document.getElementById("menuArtworkSettingsButton").addEventListener("click", openSettings);
       document.getElementById("menuMoreGamesButton").addEventListener("click", openMoreGames);
       document.getElementById("levelsBackButton").addEventListener("click", returnToMenu);
-      document.getElementById("highScoresBackButton").addEventListener("click", returnToMenu);
+      document.getElementById("highScoresBackButton").addEventListener("click", closeHighScores);
+      document.getElementById("refreshRankingsButton").addEventListener("click", () => {
+        renderLeaderboard();
+        leaderboardStatus.textContent = translate("rankingsRefreshed");
+      });
+      document.getElementById("clearRankingsButton").addEventListener("click", clearRankings);
       document.getElementById("moreGamesBackButton").addEventListener("click", returnToMenu);
       document.getElementById("settingsBackButton").addEventListener("click", closeSettings);
       document.getElementById("resumeButton").addEventListener("click", startGame);
@@ -2274,28 +2663,10 @@
           startSelectedDifficulty(button.dataset.difficulty);
         });
       });
-      document.getElementById("playerNameForm").addEventListener("submit", (event) => {
-        event.preventDefault();
-        const name = playerNameInput.value.trim().slice(0, 16);
-        if (!name) {
-          playerNameInput.setCustomValidity(translate("playerNameRequired"));
-          playerNameInput.reportValidity();
-          return;
-        }
-        playerNameInput.setCustomValidity("");
-        try {
-          localStorage.setItem("neon-snake-player-name", name);
-        } catch (error) {
-          console.warn("Unable to save the player name.", error);
-          playerNameStatus.textContent = translate("playerNameSaveError");
-          return;
-        }
-        playerName = name;
-        playerNameStatus.textContent = translate("playerNameSaved");
-      });
       document.querySelectorAll("[data-screen-action='settings']").forEach((button) => {
         button.addEventListener("click", openSettings);
       });
+      rankingButton.addEventListener("click", openHighScores);
       settingsButton.addEventListener("click", openSettings);
       pauseButton.addEventListener("click", togglePause);
       languageSelect.addEventListener("change", () => {
@@ -2314,6 +2685,11 @@
         if (musicGain && audioContext) {
           musicGain.gain.setTargetAtTime(musicVolume / 100, audioContext.currentTime, 0.03);
         }
+      });
+      voiceRateSlider.addEventListener("input", () => {
+        praiseVoiceRate = Number(voiceRateSlider.value);
+        updateVoiceRateDisplay();
+        savePraiseVoiceRate();
       });
       musicButton.addEventListener("click", () => {
         musicEnabled = !musicEnabled;
@@ -2344,7 +2720,10 @@
         } else if (event.key === "Escape" && state === "levels") {
           event.preventDefault();
           returnToMenu();
-        } else if (event.key === "Escape" && (state === "highScores" || state === "moreGames")) {
+        } else if (event.key === "Escape" && state === "highScores") {
+          event.preventDefault();
+          closeHighScores();
+        } else if (event.key === "Escape" && state === "moreGames") {
           event.preventDefault();
           returnToMenu();
         }
