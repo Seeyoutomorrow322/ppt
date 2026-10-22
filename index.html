@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ffffff">
+  <title>三方协议韩文填写指南</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", "Microsoft YaHei", sans-serif;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      --ink: #202833;
+      --muted: #687385;
+      --accent: #2563eb;
+      --line: #dce2e9;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      color: var(--ink);
+      background: #f4f6f8;
+    }
+
+    .presentation {
+      width: min(100%, 1200px);
+    }
+
+    .stage {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      border: 1px solid #e0e5eb;
+      border-radius: 8px;
+      background: #ffffff;
+    }
+
+    .stage.cover-mode {
+      position: fixed;
+      z-index: 20;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      aspect-ratio: auto;
+      overflow: hidden;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      padding: clamp(28px, 5.4vw, 76px);
+      background: #ffffff;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(18px);
+      transition: opacity 260ms ease, transform 260ms ease, visibility 260ms;
+    }
+
+    .slide.active {
+      z-index: 1;
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--accent);
+      font-size: clamp(10px, 1vw, 13px);
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      width: 22px;
+      height: 2px;
+      background: var(--accent);
+      content: "";
+    }
+
+    h1, h2, p { margin-top: 0; }
+
+    h1 {
+      max-width: 800px;
+      margin-bottom: 18px;
+      font-size: clamp(34px, 5.2vw, 68px);
+      line-height: 1.2;
+      letter-spacing: -0.045em;
+      word-break: keep-all;
+    }
+
+    h2 {
+      margin: 14px 0 0;
+      font-size: clamp(27px, 3.8vw, 48px);
+      line-height: 1.2;
+      letter-spacing: -0.04em;
+    }
+
+    .cover-copy { display: flex; flex-direction: column; min-width: 0; }
+
+    .subtitle {
+      margin-bottom: 0;
+      color: #4b5563;
+      font-size: clamp(17px, 2.2vw, 27px);
+      line-height: 1.5;
+      letter-spacing: -0.02em;
+    }
+
+    .cover-footer {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: auto;
+      color: var(--muted);
+      font-size: clamp(12px, 1.3vw, 16px);
+    }
+
+    .cover-footer::before {
+      width: 34px;
+      height: 1px;
+      background: var(--accent);
+      content: "";
+    }
+
+    .slide-header {
+      flex: 0 0 auto;
+      margin-bottom: clamp(12px, 1.8vw, 22px);
+    }
+
+    .slide:not(.cover) { padding: clamp(22px, 4vw, 58px); }
+
+    .field-list {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: repeat(6, minmax(0, 1fr));
+      gap: clamp(7px, 0.85vw, 11px);
+      min-height: 0;
+      flex: 1 1 auto;
+    }
+
+    .field-card {
+      display: grid;
+      grid-template-columns: minmax(150px, 0.8fr) minmax(0, 1.2fr);
+      align-items: center;
+      gap: clamp(14px, 2vw, 26px);
+      min-width: 0;
+      padding: 2px clamp(12px, 1.55vw, 20px);
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #ffffff;
+    }
+
+    .field-image {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-width: 0;
+      height: 100%;
+      min-height: 48px;
+      overflow: hidden;
+      border: 1px solid #dce2e9;
+      border-radius: 4px;
+      background-color: #f8fafc;
+      background-image: url("./image.png");
+      background-repeat: no-repeat;
+      background-position: var(--crop-x, 0%) var(--crop-y, 16%);
+      background-size: 180% auto;
+    }
+
+    .crop-code { --crop-y: 15%; }
+    .crop-contact { --crop-y: 24%; }
+    .crop-phone { --crop-x: 100%; --crop-y: 24%; }
+    .crop-contact, .crop-phone { background-size: 200% auto; }
+    .crop-address { --crop-x: 15%; --crop-y: 33%; }
+    .crop-zip { --crop-x: 100%; --crop-y: 33%; }
+    .crop-nature {
+      --crop-x: 100%;
+      --crop-y: 46%;
+      background-size: 110% auto;
+    }
+    .crop-opinion {
+      --crop-x: 17%;
+      --crop-y: 63%;
+      background-size: 230% auto;
+    }
+    .crop-supervisor { --crop-x: 100%; --crop-y: 65%; }
+    .crop-unavailable {
+      --crop-x: 100%;
+      --crop-y: 0%;
+      justify-content: center;
+      padding: 8px;
+      color: #687385;
+      background-color: #f8fafc;
+      font-size: clamp(9px, 0.85vw, 11px);
+      text-align: center;
+    }
+
+    .crop-note {
+      padding: 3px 6px;
+      background: rgba(255, 255, 255, 0.88);
+      line-height: 1.4;
+    }
+
+    .field-copy { min-width: 0; }
+
+    .field-card h3 {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 4px 10px;
+      margin: 0 0 3px;
+      font-size: clamp(13px, 1.28vw, 16px);
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .field-card h3 span {
+      color: var(--accent);
+      font-size: 0.88em;
+      font-weight: 500;
+    }
+
+    .field-card p {
+      margin: 0;
+      color: #4b5563;
+      font-size: clamp(10px, 0.95vw, 12px);
+      line-height: 1.15;
+      word-break: keep-all;
+    }
+
+    .guide-cn, .guide-ko { display: block; }
+    .guide-ko { margin-top: 2px; color: #687385; }
+
+    .field-card.important {
+      border-color: #93b4f5;
+      background: #f7faff;
+    }
+
+    .field-list.three-items { grid-template-rows: repeat(3, minmax(0, 1fr)); }
+    .field-list.three-items .field-card { padding-block: clamp(10px, 1.4vw, 18px); }
+
+    .note {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-top: auto;
+      padding-top: 14px;
+      color: var(--muted);
+      font-size: clamp(10px, 1.05vw, 13px);
+      line-height: 1.5;
+    }
+
+    .note strong {
+      flex: 0 0 auto;
+      color: var(--accent);
+      font-size: 0.9em;
+      letter-spacing: 0.08em;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .controls button {
+      min-height: 42px;
+      padding: 0 18px;
+      border: 1px solid #cbd3dd;
+      border-radius: 5px;
+      color: var(--ink);
+      background: #ffffff;
+      font: inherit;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 160ms ease, border-color 160ms ease, opacity 160ms ease;
+    }
+
+    .controls button:hover:not(:disabled) {
+      border-color: var(--accent);
+      background: #f3f7ff;
+    }
+
+    .controls button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .controls button:disabled {
+      opacity: 0.38;
+      cursor: not-allowed;
+    }
+
+    .page-indicator {
+      min-width: 58px;
+      color: #4b5563;
+      font-size: 14px;
+      font-variant-numeric: tabular-nums;
+      text-align: center;
+    }
+
+    .keyboard-hint {
+      margin: 9px 0 0;
+      color: #687385;
+      font-size: 11px;
+      text-align: center;
+    }
+
+    @media (max-width: 680px) {
+      body { padding: 14px; }
+      .stage { aspect-ratio: auto; min-height: 0; overflow: visible; border-radius: 6px; }
+      .slide {
+        position: relative;
+        inset: auto;
+        display: none;
+        min-height: 0;
+        padding: 28px 22px;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+      }
+      .slide.active { display: flex; }
+      .cover-footer { margin-top: 24px; }
+      .slide-header { margin-bottom: 18px; }
+      .field-list, .field-list.three-items {
+        grid-template-rows: none;
+        grid-auto-rows: minmax(78px, auto);
+        gap: 9px;
+      }
+      .field-card, .field-list.three-items .field-card {
+        grid-template-columns: minmax(105px, 0.75fr) minmax(0, 1.25fr);
+        gap: 12px;
+        padding: 9px 11px;
+      }
+      .field-image { min-height: 54px; padding: 6px 8px; }
+      .note { margin-top: 14px; }
+    }
+
+    @media (max-width: 420px) {
+      .field-card, .field-list.three-items .field-card {
+        grid-template-columns: minmax(90px, 0.7fr) minmax(0, 1.3fr);
+        gap: 9px;
+        padding-inline: 8px;
+      }
+    }
+
+    .cover-mode .cover.active {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: clamp(36px, 10vh, 100px) clamp(28px, 10vw, 160px);
+      background-color: #ffffff;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.82)),
+        url("./学校图片.png");
+      background-position: center;
+      background-size: cover;
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+    }
+
+    .cover-mode .cover-copy {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 1100px);
+      margin: auto 0;
+    }
+
+    .cover-mode .cover h1 { color: #17212f; }
+    .cover-mode .cover .subtitle { color: #344054; }
+    .cover-mode .cover .cover-footer { color: #4b5563; }
+
+    body.cover-active { display: block; padding: 0; overflow: hidden; }
+    body.cover-active .presentation { width: 100%; }
+    body.cover-active .controls {
+      position: fixed;
+      z-index: 30;
+      bottom: 34px;
+      left: 50%;
+      margin: 0;
+      transform: translateX(-50%);
+    }
+    body.cover-active .keyboard-hint {
+      position: fixed;
+      z-index: 30;
+      right: 0;
+      bottom: 10px;
+      left: 0;
+      margin: 0;
+      color: #4b5563;
+    }
+
+    @media (max-width: 680px) {
+      .crop-code, .crop-contact, .crop-phone, .crop-address, .crop-zip {
+        height: 42px;
+        background-size: 350% auto;
+      }
+      .crop-code { --crop-x: 10%; --crop-y: 13%; }
+      .crop-contact { --crop-x: 10%; --crop-y: 20%; }
+      .crop-phone { --crop-x: 60%; --crop-y: 20%; }
+      .crop-address { --crop-x: 15%; --crop-y: 28%; }
+      .crop-zip { --crop-x: 80%; --crop-y: 28%; }
+      .crop-nature { --crop-x: 15%; --crop-y: 36%; }
+      .crop-opinion { --crop-x: 17%; --crop-y: 57%; }
+      .crop-supervisor { --crop-x: 100%; --crop-y: 57%; }
+
+      .cover-mode .cover.active {
+        min-height: 100vh;
+        min-height: 100dvh;
+        padding: 32px 24px 112px;
+      }
+
+      body.cover-active .controls { bottom: 34px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="presentation" aria-label="삼자 협약서 작성 안내 프레젠테이션">
+    <div class="stage" aria-live="polite">
+      <section class="slide cover active" aria-labelledby="slide-title-1">
+        <div class="cover-copy">
+          <div class="eyebrow">THREE-PARTY AGREEMENT · GUIDE</div>
+          <h1 id="slide-title-1">用人单位信息及意见<br>填写指南</h1>
+          <p class="subtitle">고용주 정보 및 의견란 작성 가이드</p>
+          <p class="cover-footer">이 가이드에 따라 정보를 입력해 주세요.</p>
+        </div>
+      </section>
+
+      <section class="slide" aria-labelledby="slide-title-2">
+        <header class="slide-header">
+          <div class="eyebrow">01 · BASIC INFORMATION</div>
+          <h2 id="slide-title-2">基本信息填写区 <span style="color: var(--accent);">· 上部分</span></h2>
+        </header>
+        <div class="field-list">
+          <article class="field-card">
+            <div class="field-image crop-unavailable" role="img" aria-label="原表图片未包含单位名称栏">
+              <span class="crop-note">原图未包含单位名称栏<br>请补充原表截图</span>
+            </div>
+            <div class="field-copy">
+              <h3>单位名称 <span>(기관명)</span></h3>
+              <p><span class="guide-cn">填写营业执照上的正式公司名称</span><span class="guide-ko">영업허가증의 공식 회사명</span></p>
+            </div>
+          </article>
+          <article class="field-card">
+            <div class="field-image crop-code" role="img" aria-label="原表统一社会信用代码栏截图">
+            </div>
+            <div class="field-copy">
+              <h3>统一社会信用代码 <span>(통일사회신용코드)</span></h3>
+              <p><span class="guide-cn">填写营业执照上的 18 位代码</span><span class="guide-ko">영업허가증의 18자리 코드</span></p>
+            </div>
+          </article>
+          <article class="field-card">
+            <div class="field-image crop-contact" role="img" aria-label="原表联系人栏截图">
+            </div>
+            <div class="field-copy">
+              <h3>联系人 <span>(연락책)</span></h3>
+              <p><span class="guide-cn">填写公司负责签约的 HR 名字</span><span class="guide-ko">계약 담당자 명</span></p>
+            </div>
+          </article>
+          <article class="field-card">
+            <div class="field-image crop-phone" role="img" aria-label="原表联系电话栏截图">
+            </div>
+            <div class="field-copy">
+              <h3>联系电话 <span>(연락처)</span></h3>
+              <p><span class="guide-cn">填写 HR 的手机号码</span><span class="guide-ko">HR의 휴대폰 번호</span></p>
+            </div>
+          </article>
+          <article class="field-card">
+            <div class="field-image crop-address" role="img" aria-label="原表通讯地址栏截图">
+            </div>
+            <div class="field-copy">
+              <h3>通讯地址 <span>(통신 주소)</span></h3>
+              <p><span class="guide-cn">填写营业执照上的注册详细地址</span><span class="guide-ko">영업허가증의 등록 상세 주소</span></p>
+            </div>
+          </article>
+          <article class="field-card">
+            <div class="field-image crop-zip" role="img" aria-label="原表邮政编码栏截图">
+            </div>
+            <div class="field-copy">
+              <h3>邮政编码 <span>(우편번호)</span></h3>
+              <p><span class="guide-cn">填写通讯地址对应的邮政编码</span><span class="guide-ko">통신 주소에 해당하는 우편번호</span></p>
+            </div>
+          </article>
+        </div>
+        <p class="note"><strong>작성 팁</strong><span>회사 정보는 영업허가증에 기재된 내용과 일치하도록 입력해 주세요. / 公司信息请与营业执照内容保持一致。</span></p>
+      </section>
+
+      <section class="slide" aria-labelledby="slide-title-3">
+        <header class="slide-header">
+          <div class="eyebrow">02 · TYPE &amp; APPROVAL</div>
+          <h2 id="slide-title-3">单位性质与盖章 <span style="color: var(--accent);">· 下部分</span></h2>
+        </header>
+        <div class="field-list three-items">
+          <article class="field-card">
+            <div class="field-image crop-nature" role="img" aria-label="原表单位性质栏截图">
+            </div>
+            <div class="field-copy">
+              <h3>单位性质 <span>(기관 성격)</span></h3>
+              <p><span class="guide-cn">根据营业执照上的企业类型，在后面的复选框中打勾</span><span class="guide-ko">영업허가증의 기업 유형에 따라 체크박스에 체크하세요.</span></p>
+            </div>
+          </article>
+          <article class="field-card important">
+            <div class="field-image crop-opinion" role="img" aria-label="原表用人单位意见栏截图">
+            </div>
+            <div class="field-copy">
+              <h3>用人单位意见 <span>(고용주 의견)</span></h3>
+              <p><span class="guide-cn">必须手写或打印“情况属实，同意录用。”并签字盖章</span><span class="guide-ko">수기 또는 인쇄로 '현황은 사실이며, 채용에 동의합니다.'라고 기재하고 서명 및 도장을 날인해야 합니다.</span></p>
+            </div>
+          </article>
+          <article class="field-card">
+            <div class="field-image crop-supervisor" role="img" aria-label="原表用人单位上级主管部门意见栏截图">
+            </div>
+            <div class="field-copy">
+              <h3>用人单位上级主管部门意见 <span>(고용주 상급 주관 부처 의견)</span></h3>
+              <p><span class="guide-cn">如果公司没有上级主管机构，这一栏可以划斜线忽略</span><span class="guide-ko">상급 주관 부처가 없는 경우 대각선으로 표시하여 생략.</span></p>
+            </div>
+          </article>
+        </div>
+        <p class="note"><strong>확인</strong><span>고용주 의견란에는 반드시 서명과 도장을 확인해 주세요. / 请确认用人单位意见栏已签字并盖章。</span></p>
+      </section>
+    </div>
+
+    <nav class="controls" aria-label="슬라이드 탐색">
+      <button id="previous" type="button" aria-label="上一页">上一页</button>
+      <span class="page-indicator" id="page-indicator" aria-live="polite">1 / 3</span>
+      <button id="next" type="button" aria-label="下一页">下一页</button>
+    </nav>
+    <p class="keyboard-hint">使用键盘 ← → 方向键切换页面</p>
+  </main>
+
+  <script>
+    (() => {
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      const stage = document.querySelector(".stage");
+      const previousButton = document.getElementById("previous");
+      const nextButton = document.getElementById("next");
+      const pageIndicator = document.getElementById("page-indicator");
+      let currentSlide = 0;
+
+      function showSlide(index) {
+        currentSlide = Math.max(0, Math.min(index, slides.length - 1));
+        slides.forEach((slide, slideIndex) => {
+          const isActive = slideIndex === currentSlide;
+          slide.classList.toggle("active", isActive);
+          slide.setAttribute("aria-hidden", String(!isActive));
+        });
+        previousButton.disabled = currentSlide === 0;
+        nextButton.disabled = currentSlide === slides.length - 1;
+        pageIndicator.textContent = `${currentSlide + 1} / ${slides.length}`;
+        const isCover = currentSlide === 0;
+        stage.classList.toggle("cover-mode", isCover);
+        document.body.classList.toggle("cover-active", isCover);
+      }
+
+      previousButton.addEventListener("click", () => showSlide(currentSlide - 1));
+      nextButton.addEventListener("click", () => showSlide(currentSlide + 1));
+
+      document.addEventListener("keydown", (event) => {
+        if (event.altKey || event.ctrlKey || event.metaKey) return;
+        if (event.key === "ArrowLeft") {
+          event.preventDefault();
+          showSlide(currentSlide - 1);
+        } else if (event.key === "ArrowRight") {
+          event.preventDefault();
+          showSlide(currentSlide + 1);
+        }
+      });
+
+      showSlide(0);
+    })();
+  </script>
+</body>
+</html>
